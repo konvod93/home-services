@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ───────────────────────────────────────────────
+
+enum Role {
+  CLIENT
+  MASTER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING      // ожидает подтверждения
+  CONFIRMED    // мастер принял
+  IN_PROGRESS  // мастер на месте
+  DONE         // выполнен
+  CANCELLED    // отменён
+}
+
+enum ServiceCategory {
+  PLUMBING      // сантехника
+  ELECTRICAL    // электрика
+  RENOVATION    // ремонт
+  CLEANING      // уборка
+  FURNITURE     // сборка мебели
+  OTHER
+}
+
+// ─── MODELS ──────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  password  String
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders  Order[]  @relation("ClientOrders")
+  master  Master?
+}
+
+model Master {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  bio         String?
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services  MasterService[]
+  slots     Slot[]
+  orders    Order[]           @relation("MasterOrders")
+}
+
+model Service {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  category    ServiceCategory
+  basePrice   Decimal         @db.Decimal(10, 2)
+  unit        String          // "за час", "за выезд", "за м²"
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  masters     MasterService[]
+  orderItems  OrderItem[]
+}
+
+model MasterService {
+  id        String  @id @default(cuid())
+  masterId  String
+  serviceId String
+  price     Decimal @db.Decimal(10, 2) // своя цена мастера
+
+  master  Master  @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([masterId, serviceId])
+}
+
+model Slot {
+  id        String   @id @default(cuid())
+  masterId  String
+  date      DateTime @db.Date
+  timeStart DateTime @db.Time
+  timeEnd   DateTime @db.Time
+  isBusy    Boolean  @default(false)
+
+  master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  order  Order?
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  clientId    String
+  masterId    String
+  slotId      String      @unique
+  status      OrderStatus @default(PENDING)
+  address     String
+  comment     String?
+  totalPrice  Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  client     User        @relation("ClientOrders", fields: [clientId], references: [id])
+  master     Master      @relation("MasterOrders", fields: [masterId], references: [id])
+  slot       Slot        @relation(fields: [slotId], references: [id])
+  items      OrderItem[]
+  review     Review?
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  serviceId String
+  quantity  Int     @default(1)
+  price     Decimal @db.Decimal(10, 2) // цена на момент заказа
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  rating    Int      // 1–5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
