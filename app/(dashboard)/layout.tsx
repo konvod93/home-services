@@ -14,7 +14,6 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-zinc-950">
-      {/* Навбар */}
       <nav className="border-b border-zinc-800 bg-zinc-900">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/dashboard">
@@ -33,6 +32,18 @@ export default async function DashboardLayout({
             <Link href="/services" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Услуги
             </Link>
+            <Link href="/profile" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              Профиль
+            </Link>
+
+            {session.user.role === "MASTER" && (
+              <Link
+                href="/master"
+                className="text-sm bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                Кабинет мастера
+              </Link>
+            )}
 
             <form action={async () => {
               "use server";
@@ -46,7 +57,6 @@ export default async function DashboardLayout({
         </div>
       </nav>
 
-      {/* Контент */}
       <main className="max-w-6xl mx-auto px-4 py-8">
         {children}
       </main>
