@@ -15,6 +15,10 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
+  if (nextUrl.pathname.startsWith("/admin") && session?.user?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  }
+
   return NextResponse.next();
 });
 
