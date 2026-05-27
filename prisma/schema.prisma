@@ -154,9 +154,10 @@ model MasterApplication {
   masterId    String            @unique
   status      ApplicationStatus @default(PENDING)
   bio         String?
-  experience  Int               // лет опыта
-  documents   String[]          // URLs загруженных файлов
-  comment     String?           // комментарий админа при отклонении
+  experience  Int
+  documents   String[]
+  idPhoto     String?           // фото с паспортом
+  comment     String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 

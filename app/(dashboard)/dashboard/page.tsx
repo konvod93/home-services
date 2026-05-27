@@ -1,12 +1,12 @@
 import { auth } from "@/auth";
 import Link from "next/link";
+import MasterApplicationButton from "./MasterApplicationButton";
 
 export default async function DashboardPage() {
   const session = await auth();
 
   return (
     <div>
-      {/* Приветствие */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">
           Добро пожаловать, {session?.user?.name} 👋
@@ -14,7 +14,6 @@ export default async function DashboardPage() {
         <p className="text-zinc-500 mt-1">Что нужно сделать сегодня?</p>
       </div>
 
-      {/* Карточки быстрого доступа */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <Link href="/services" className="group bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 rounded-2xl p-6 transition-all">
           <div className="text-2xl mb-3">🔧</div>
@@ -33,9 +32,12 @@ export default async function DashboardPage() {
           <h2 className="text-white font-semibold mb-1">Профиль</h2>
           <p className="text-zinc-500 text-sm">Личные данные и настройки</p>
         </Link>
+
+        {session?.user?.role === "CLIENT" && (
+          <MasterApplicationButton />
+        )}
       </div>
 
-      {/* Статистика */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <p className="text-zinc-500 text-sm mb-1">Всего заказов</p>
