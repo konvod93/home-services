@@ -75,6 +75,8 @@ export default async function AdminPage() {
                       <Image
                         src={app.idPhoto}
                         alt="ID фото"
+                        width={192}
+                        height={128}
                         className="w-48 h-32 object-cover rounded-lg border border-zinc-700 hover:border-amber-400 transition-colors"
                       />
                     </a>
@@ -103,7 +105,7 @@ export default async function AdminPage() {
 
                 <ApplicationActions
                   applicationId={app.id}
-                  masterId={app.master.id}                  
+                  masterId={app.master.id}
                 />
               </div>
             ))}
