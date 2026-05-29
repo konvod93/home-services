@@ -44,3 +44,15 @@ export async function rejectApplication(applicationId: string, comment: string) 
 
   revalidatePath("/admin");
 }
+
+export async function toggleService(serviceId: string, isActive: boolean) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  await db.service.update({
+    where: { id: serviceId },
+    data: { isActive },
+  });
+
+  revalidatePath("/admin/services");
+}
