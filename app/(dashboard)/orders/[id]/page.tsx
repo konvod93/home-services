@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import ComplaintForm from "./ComplaintForm";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Ожидает подтверждения",
@@ -36,6 +37,7 @@ export default async function OrderPage({
       master: { include: { user: { select: { name: true, phone: true } } } },
       slot: true,
       review: true,
+      complaint: true,
     },
   });
 
@@ -65,7 +67,6 @@ export default async function OrderPage({
             <span className="text-white">{item.price} ₴</span>
           </div>
         ))}
-
         <div className="border-t border-zinc-800 pt-4 flex justify-between">
           <span className="text-zinc-500">Итого</span>
           <span className="text-amber-400 font-bold text-lg">{order.totalPrice} ₴</span>
@@ -109,14 +110,25 @@ export default async function OrderPage({
         )}
       </div>
 
-      {/* Отзыв — если заказ завершён и отзыва нет */}
+      {/* Отзыв */}
       {order.status === "DONE" && !order.review && (
         <Link
           href={`/orders/${order.id}/review`}
-          className="block w-full text-center bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors"
+          className="block w-full text-center bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors mb-4"
         >
           Оставить отзыв
         </Link>
+      )}
+
+      {/* Жалоба */}
+      {order.status === "DONE" && !order.complaint && (
+        <ComplaintForm orderId={order.id} />
+      )}
+
+      {order.complaint && (
+        <p className="text-zinc-600 text-sm text-center mt-4">
+          Жалоба подана {new Date(order.complaint.createdAt).toLocaleDateString("ru-RU")}
+        </p>
       )}
     </div>
   );

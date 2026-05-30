@@ -45,6 +45,8 @@ model User {
 
   orders  Order[]  @relation("ClientOrders")
   master  Master?
+  complaints  Complaint[] @relation("ClientComplaints")
+  
 }
 
 model Master {
@@ -63,6 +65,7 @@ model Master {
   slots        Slot[]
   orders       Order[]           @relation("MasterOrders")
   application  MasterApplication?
+  complaints  Complaint[]
 }
 
 model Service {
@@ -120,6 +123,7 @@ model Order {
   slot       Slot        @relation(fields: [slotId], references: [id])
   items      OrderItem[]
   review     Review?
+  complaint   Complaint?
 }
 
 model OrderItem {
@@ -163,4 +167,25 @@ model MasterApplication {
   updatedAt   DateTime          @updatedAt
 
   master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+}
+
+enum ComplaintStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
+model Complaint {
+  id          String          @id @default(cuid())
+  orderId     String          @unique
+  clientId    String
+  masterId    String
+  reason      String
+  status      ComplaintStatus @default(PENDING)
+  adminNote   String?
+  createdAt   DateTime        @default(now())
+
+  order  Order  @relation(fields: [orderId], references: [id])
+  client User   @relation("ClientComplaints", fields: [clientId], references: [id])
+  master Master @relation(fields: [masterId], references: [id])
 }

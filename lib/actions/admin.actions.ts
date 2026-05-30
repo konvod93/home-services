@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { ComplaintStatus } from "@prisma/client"; 
 
 export async function approveApplication(applicationId: string, masterId: string) {
   const session = await auth();
@@ -76,4 +77,29 @@ export async function toggleService(serviceId: string, isActive: boolean) {
   });
 
   revalidatePath("/admin/services");
+}
+
+export async function toggleMasterBlock(masterId: string, isActive: boolean) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  await db.master.update({
+    where: { id: masterId },
+    data: { isActive },
+  });
+
+  revalidatePath("/admin/masters");
+  revalidatePath("/admin/complaints");
+}
+
+export async function resolveComplaint(complaintId: string, status: string) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  await db.complaint.update({
+    where: { id: complaintId },
+    data: { status: status as ComplaintStatus },
+  });
+
+  revalidatePath("/admin/complaints");
 }

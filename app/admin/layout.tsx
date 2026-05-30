@@ -31,6 +31,12 @@ export default async function AdminLayout({
             <Link href="/admin/services" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Услуги
             </Link>
+            <Link href="/admin/masters" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              Мастера
+            </Link>
+            <Link href="/admin/complaints" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              Жалобы
+            </Link>
             <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-white transition-colors">
               ← На сайт
             </Link>
