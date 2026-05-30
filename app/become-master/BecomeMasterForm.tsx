@@ -4,18 +4,40 @@ import { useState } from "react";
 import { useUploadThing } from "@/lib/uploadthing";
 import { submitMasterApplication } from "@/lib/actions/master-application.actions";
 
+const categories = [
+  { value: "PLUMBING", label: "🚿 Сантехника" },
+  { value: "ELECTRICAL", label: "⚡ Электрика" },
+  { value: "RENOVATION", label: "🏠 Ремонт" },
+  { value: "CLEANING", label: "🧹 Уборка" },
+  { value: "FURNITURE", label: "🪑 Мебель" },
+  { value: "OTHER", label: "🔧 Другое" },
+];
+
 export default function BecomeMasterForm() {
   const [files, setFiles] = useState<File[]>([]);
   const [idPhotoFile, setIdPhotoFile] = useState<File | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const { startUpload: uploadDocs } = useUploadThing("masterDocuments");
   const { startUpload: uploadIdPhoto } = useUploadThing("idPhoto");
 
+  function toggleCategory(value: string) {
+    setSelectedCategories((prev) =>
+      prev.includes(value) ? prev.filter((c) => c !== value) : [...prev, value]
+    );
+  }
+
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     setError(null);
+
+    if (selectedCategories.length === 0) {
+      setError("Выберите хотя бы одну специализацию");
+      setLoading(false);
+      return;
+    }
 
     if (!idPhotoFile) {
       setError("Загрузите фото с паспортом — это обязательно");
@@ -23,7 +45,6 @@ export default function BecomeMasterForm() {
       return;
     }
 
-    // Загружаем фото с паспортом
     const uploadedId = await uploadIdPhoto([idPhotoFile]);
     if (!uploadedId) {
       setError("Ошибка загрузки фото");
@@ -31,7 +52,6 @@ export default function BecomeMasterForm() {
       return;
     }
 
-    // Загружаем документы если есть
     let documentUrls: string[] = [];
     if (files.length > 0) {
       const uploaded = await uploadDocs(files);
@@ -45,6 +65,7 @@ export default function BecomeMasterForm() {
 
     formData.append("documents", JSON.stringify(documentUrls));
     formData.append("idPhoto", uploadedId[0].url);
+    formData.append("categories", JSON.stringify(selectedCategories));
 
     const result = await submitMasterApplication(formData);
     if (result?.error) {
@@ -80,15 +101,38 @@ export default function BecomeMasterForm() {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
+
+        {/* Специализация */}
+        <div>
+          <label className="block text-sm text-zinc-400 mb-2">
+            Специализация <span className="text-red-400">*</span>
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat.value}
+                type="button"
+                onClick={() => toggleCategory(cat.value)}
+                className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${
+                  selectedCategories.includes(cat.value)
+                    ? "bg-amber-400/10 border-amber-400 text-amber-400"
+                    : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Фото с паспортом — обязательно */}
+      {/* Фото с паспортом */}
       <div className="bg-zinc-900 border border-amber-400/20 rounded-2xl p-6">
         <label className="block text-sm font-medium text-white mb-1">
           Фото с паспортом <span className="text-red-400">*</span>
         </label>
         <p className="text-zinc-500 text-xs mb-3">
-          Сфотографируйтесь рядом с развёрнутым паспортом. Лицо и данные паспорта должны быть чётко видны. Фото используется только для верификации и не публикуется.
+          Сфотографируйтесь рядом с развёрнутым паспортом. Лицо и данные паспорта должны быть чётко видны.
         </p>
         <input
           type="file"
@@ -101,7 +145,7 @@ export default function BecomeMasterForm() {
         )}
       </div>
 
-      {/* Дипломы и сертификаты — опционально */}
+      {/* Документы */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
         <label className="block text-sm font-medium text-white mb-1">
           Дипломы и сертификаты

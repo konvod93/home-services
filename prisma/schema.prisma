@@ -156,7 +156,8 @@ model MasterApplication {
   bio         String?
   experience  Int
   documents   String[]
-  idPhoto     String?           // фото с паспортом
+  idPhoto     String?
+  categories  ServiceCategory[] // добавляем
   comment     String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
