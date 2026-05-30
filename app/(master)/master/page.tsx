@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import OrderStatusForm from "./OrderStatusForm";
-import Link from "next/link"
 
 const statusLabels: Record<string, string> = {
   PENDING: "Ожидает",
@@ -46,31 +45,7 @@ export default async function MasterPage() {
   const done = orders.filter((o) => ["DONE", "CANCELLED"].includes(o.status));
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <nav className="border-b border-zinc-800 bg-zinc-900">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="text-xl font-bold text-white">
-            home<span className="text-amber-400">fix</span>
-            <span className="text-zinc-500 text-sm font-normal ml-2">кабинет мастера</span>
-          </span>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors"
-            >
-              Режим клиента
-            </Link>
-            <Link
-              href="/master/slots"
-              className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors"
-            >
-              Мои слоты
-            </Link>
-            <span className="text-zinc-400 text-sm">{session.user.name}</span>
-          </div>
-        </div>
-      </nav>
-
+    <div className="bg-zinc-950">      
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Статистика */}
         <div className="grid grid-cols-3 gap-4 mb-8">
