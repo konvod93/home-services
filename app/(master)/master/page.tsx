@@ -60,6 +60,12 @@ export default async function MasterPage() {
             >
               Режим клиента
             </Link>
+            <Link
+              href="/master/slots"
+              className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Мои слоты
+            </Link>
             <span className="text-zinc-400 text-sm">{session.user.name}</span>
           </div>
         </div>
