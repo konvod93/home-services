@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useUploadThing } from "@/lib/uploadthing";
 import { submitMasterApplication } from "@/lib/actions/master-application.actions";
 
-const categories = [
+const categoryList = [
   { value: "PLUMBING", label: "🚿 Сантехника" },
   { value: "ELECTRICAL", label: "⚡ Электрика" },
   { value: "RENOVATION", label: "🏠 Ремонт" },
@@ -13,10 +13,22 @@ const categories = [
   { value: "OTHER", label: "🔧 Другое" },
 ];
 
-export default function BecomeMasterForm() {
+interface Service {
+  id: string;
+  name: string;
+  category: string;
+  unit: string;
+}
+
+interface Props {
+  services: Service[];
+}
+
+export default function BecomeMasterForm({ services }: Props) {
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [idPhotoFile, setIdPhotoFile] = useState<File | null>(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,20 +39,39 @@ export default function BecomeMasterForm() {
     setSelectedCategories((prev) =>
       prev.includes(value) ? prev.filter((c) => c !== value) : [...prev, value]
     );
+    // убираем услуги этой категории если категория снята
+    if (selectedCategories.includes(value)) {
+      const categoryServices = services.filter((s) => s.category === value).map((s) => s.id);
+      setSelectedServices((prev) => prev.filter((id) => !categoryServices.includes(id)));
+    }
   }
+
+  function toggleService(id: string) {
+    setSelectedServices((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  }
+
+  const filteredServices = services.filter((s) => selectedCategories.includes(s.category));
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     setError(null);
 
     if (selectedCategories.length === 0) {
-      setError("Выберите хотя бы одну специализацию");
+      setError("Выберите хотя бы одну категорию");
+      setLoading(false);
+      return;
+    }
+
+    if (selectedServices.length === 0) {
+      setError("Выберите хотя бы одну услугу");
       setLoading(false);
       return;
     }
 
     if (!idPhotoFile) {
-      setError("Загрузите фото с паспортом — это обязательно");
+      setError("Загрузите фото с паспортом");
       setLoading(false);
       return;
     }
@@ -66,6 +97,7 @@ export default function BecomeMasterForm() {
     formData.append("documents", JSON.stringify(documentUrls));
     formData.append("idPhoto", uploadedId[0].url);
     formData.append("categories", JSON.stringify(selectedCategories));
+    formData.append("serviceIds", JSON.stringify(selectedServices));
 
     const result = await submitMasterApplication(formData);
     if (result?.error) {
@@ -101,30 +133,58 @@ export default function BecomeMasterForm() {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
+      </div>
 
-        {/* Специализация */}
-        <div>
-          <label className="block text-sm text-zinc-400 mb-2">
-            Специализация <span className="text-red-400">*</span>
+      {/* Шаг 1 — Категории */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <label className="block text-sm font-medium text-white mb-1">
+          Шаг 1: Выберите категории <span className="text-red-400">*</span>
+        </label>
+        <p className="text-zinc-500 text-xs mb-3">Отметьте направления в которых вы работаете</p>
+        <div className="grid grid-cols-2 gap-2">
+          {categoryList.map((cat) => (
+            <button
+              key={cat.value}
+              type="button"
+              onClick={() => toggleCategory(cat.value)}
+              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${
+                selectedCategories.includes(cat.value)
+                  ? "bg-amber-400/10 border-amber-400 text-amber-400"
+                  : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Шаг 2 — Конкретные услуги */}
+      {filteredServices.length > 0 && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <label className="block text-sm font-medium text-white mb-1">
+            Шаг 2: Выберите услуги <span className="text-red-400">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-2">
-            {categories.map((cat) => (
+          <p className="text-zinc-500 text-xs mb-3">Отметьте только те работы которые вы умеете делать</p>
+          <div className="space-y-1">
+            {filteredServices.map((service) => (
               <button
-                key={cat.value}
+                key={service.id}
                 type="button"
-                onClick={() => toggleCategory(cat.value)}
-                className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${
-                  selectedCategories.includes(cat.value)
-                    ? "bg-amber-400/10 border-amber-400 text-amber-400"
+                onClick={() => toggleService(service.id)}
+                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${
+                  selectedServices.includes(service.id)
+                    ? "bg-amber-400/10 border-amber-400 text-white"
                     : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
                 }`}
               >
-                {cat.label}
+                <span>{service.name}</span>
+                <span className="text-zinc-600 text-xs">{service.unit}</span>
               </button>
             ))}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Фото с паспортом */}
       <div className="bg-zinc-900 border border-amber-400/20 rounded-2xl p-6">
@@ -151,9 +211,6 @@ export default function BecomeMasterForm() {
           Дипломы и сертификаты
           <span className="text-zinc-500 font-normal ml-1">(необязательно)</span>
         </label>
-        <p className="text-zinc-500 text-xs mb-3">
-          PDF или фото дипломов, сертификатов, рекомендательных писем. До 5 файлов.
-        </p>
         <input
           type="file"
           multiple

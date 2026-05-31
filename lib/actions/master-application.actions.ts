@@ -15,11 +15,13 @@ export async function submitMasterApplication(formData: FormData) {
   const documents = JSON.parse(formData.get("documents") as string) as string[];
   const idPhoto = formData.get("idPhoto") as string;
   const categories = JSON.parse(formData.get("categories") as string) as ServiceCategory[];
+  const serviceIds = JSON.parse(formData.get("serviceIds") as string) as string[];
 
   if (!bio) return { error: "Заполните поле 'О себе'" };
   if (isNaN(experience)) return { error: "Укажите опыт работы" };
   if (!idPhoto) return { error: "Загрузите фото с паспортом" };
   if (categories.length === 0) return { error: "Выберите специализацию" };
+  if (serviceIds.length === 0) return { error: "Выберите хотя бы одну услугу" };
 
   const existing = await db.master.findUnique({
     where: { userId: session.user.id },
@@ -41,6 +43,7 @@ export async function submitMasterApplication(formData: FormData) {
       documents,
       idPhoto,
       categories,
+      serviceIds,
     },
   });
 

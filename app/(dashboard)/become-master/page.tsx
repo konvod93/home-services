@@ -1,7 +1,7 @@
+import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import BecomeMasterForm from "./BecomeMasterForm"
+import BecomeMasterForm from "./BecomeMasterForm";
 
 export default async function BecomeMasterPage() {
   const session = await auth();
@@ -36,13 +36,19 @@ export default async function BecomeMasterPage() {
     );
   }
 
+  const services = await db.service.findMany({
+    where: { isActive: true },
+    orderBy: { category: "asc" },
+    select: { id: true, name: true, category: true, unit: true },
+  });
+
   return (
     <div className="max-w-xl">
       <h1 className="text-2xl font-bold text-white mb-2">Стать мастером</h1>
       <p className="text-zinc-500 mb-8">
         Заполните анкету и загрузите документы. Мы проверим их и свяжемся с вами.
       </p>
-      <BecomeMasterForm />
+      <BecomeMasterForm services={services} />
     </div>
   );
 }

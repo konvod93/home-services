@@ -162,7 +162,8 @@ model MasterApplication {
   experience  Int
   documents   String[]
   idPhoto     String?
-  categories  ServiceCategory[] // добавляем
+  categories  ServiceCategory[]
+  serviceIds  String[]
   comment     String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt

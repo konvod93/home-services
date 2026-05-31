@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { ComplaintStatus } from "@prisma/client";
-import { ServiceCategory } from "@prisma/client"; 
+import { ServiceCategory } from "@prisma/client";
 
 export async function approveApplication(applicationId: string, masterId: string) {
   const session = await auth();
@@ -26,25 +26,35 @@ export async function approveApplication(applicationId: string, masterId: string
     data: { isVerified: true, isActive: true },
   });
 
-  // Получаем все услуги выбранных категорий
-  const services = await db.service.findMany({
-    where: {
-      category: { in: application.categories },
-      isActive: true,
-    },
-  });
+  // Создаём MasterService только для выбранных услуг
+  const serviceIds = application.serviceIds.length > 0
+    ? application.serviceIds
+    : (await db.service.findMany({
+      where: { category: { in: application.categories }, isActive: true },
+      select: { id: true },
+    })).map((s) => s.id);
 
-  // Создаём MasterService для каждой услуги
   await db.masterService.createMany({
-    data: services.map((s) => ({
+    data: serviceIds.map((serviceId) => ({
       masterId,
-      serviceId: s.id,
-      price: Number(s.basePrice),
+      serviceId,
+      price: 0,
     })),
     skipDuplicates: true,
   });
 
-  // Меняем роль на MASTER
+  // Получаем цены из basePrice услуг
+  const services = await db.service.findMany({
+    where: { id: { in: serviceIds } },
+  });
+
+  for (const service of services) {
+    await db.masterService.updateMany({
+      where: { masterId, serviceId: service.id },
+      data: { price: Number(service.basePrice) },
+    });
+  }
+
   const master = await db.master.findUnique({ where: { id: masterId } });
   if (master) {
     await db.user.update({
