@@ -147,11 +147,10 @@ export default function BecomeMasterForm({ services }: Props) {
               key={cat.value}
               type="button"
               onClick={() => toggleCategory(cat.value)}
-              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${
-                selectedCategories.includes(cat.value)
+              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${selectedCategories.includes(cat.value)
                   ? "bg-amber-400/10 border-amber-400 text-amber-400"
                   : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
-              }`}
+                }`}
             >
               {cat.label}
             </button>
@@ -172,11 +171,10 @@ export default function BecomeMasterForm({ services }: Props) {
                 key={service.id}
                 type="button"
                 onClick={() => toggleService(service.id)}
-                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${
-                  selectedServices.includes(service.id)
+                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${selectedServices.includes(service.id)
                     ? "bg-amber-400/10 border-amber-400 text-white"
                     : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
-                }`}
+                  }`}
               >
                 <span>{service.name}</span>
                 <span className="text-zinc-600 text-xs">{service.unit}</span>
@@ -224,6 +222,39 @@ export default function BecomeMasterForm({ services }: Props) {
       </div>
 
       {error && <p className="text-red-400 text-sm">{error}</p>}
+
+      {/* Согласия */}
+      <div className="space-y-3">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            required
+            className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-400 focus:ring-amber-400 focus:ring-offset-zinc-900"
+          />
+          <span className="text-sm text-zinc-400">
+            Я согласен с{" "}
+            <a href="/terms" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
+              правилами сервиса
+            </a>{" "}
+            и обязуюсь выполнять работы качественно и в срок
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            required
+            className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-400 focus:ring-amber-400 focus:ring-offset-zinc-900"
+          />
+          <span className="text-sm text-zinc-400">
+            Я согласен на{" "}
+            <a href="/privacy" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
+              обработку персональных данных
+            </a>
+            , включая предоставленные документы и фото
+          </span>
+        </label>
+      </div>
 
       <button
         type="submit"
