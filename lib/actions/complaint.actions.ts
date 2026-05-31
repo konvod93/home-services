@@ -10,6 +10,7 @@ export async function submitComplaint(formData: FormData) {
 
   const orderId = formData.get("orderId") as string;
   const reason = formData.get("reason") as string;
+  const photos = JSON.parse(formData.get("photos") as string) as string[];
 
   if (!reason) return { error: "Опишите причину жалобы" };
 
@@ -27,6 +28,7 @@ export async function submitComplaint(formData: FormData) {
       clientId: session.user.id,
       masterId: order.masterId,
       reason,
+      photos,
     },
   });
 

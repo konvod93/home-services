@@ -11,6 +11,7 @@ export async function createReview(formData: FormData) {
   const orderId = formData.get("orderId") as string;
   const rating = parseInt(formData.get("rating") as string);
   const comment = formData.get("comment") as string;
+  const photos = JSON.parse(formData.get("photos") as string) as string[];
 
   if (!rating || rating < 1 || rating > 5) return { error: "Некорректная оценка" };
 
@@ -24,10 +25,9 @@ export async function createReview(formData: FormData) {
   if (order.review) return { error: "Отзыв уже оставлен" };
 
   await db.review.create({
-    data: { orderId, rating, comment: comment || null },
+    data: { orderId, rating, comment: comment || null, photos },
   });
 
-  // Пересчитываем рейтинг мастера
   const reviews = await db.review.findMany({
     where: { order: { masterId: order.masterId } },
     select: { rating: true },
