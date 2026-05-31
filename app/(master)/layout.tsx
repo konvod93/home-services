@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/auth";
+import { db } from "@/lib/db";
 
 export default async function MasterLayout({
   children,
@@ -11,6 +12,12 @@ export default async function MasterLayout({
   const session = await auth();
   if (!session) redirect("/login");
   if (session.user.role !== "MASTER") redirect("/dashboard");
+
+  const master = await db.master.findUnique({
+    where: { userId: session.user.id },
+  });
+
+  if (!master || !master.isActive) redirect("/dashboard");
 
   return (
     <div className="min-h-screen bg-zinc-950">

@@ -22,6 +22,12 @@ export default async function ServicePage({
     where: { id },
     include: {
       masters: {
+        where: {
+          master: {
+            isActive: true,
+            isVerified: true,
+          },
+        },
         include: {
           master: {
             include: {
