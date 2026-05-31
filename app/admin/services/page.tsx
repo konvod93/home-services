@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import ServiceToggle from "./ServiceToggle";
+import ServiceActions from "./ServiceActions";
+import AddServiceButton from "./AddServiceButton";
 
 const categoryLabels: Record<string, string> = {
   PLUMBING: "Сантехника",
@@ -20,9 +21,13 @@ export default async function AdminServicesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Услуги</h1>
         <span className="text-zinc-500 text-sm">{services.length} всего</span>
+      </div>
+
+      <div className="mb-6">
+        <AddServiceButton />
       </div>
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
@@ -34,7 +39,7 @@ export default async function AdminServicesPage() {
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Цена</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Мастеров</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Заказов</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Статус</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -43,6 +48,9 @@ export default async function AdminServicesPage() {
                 <td className="px-6 py-4">
                   <p className="text-white text-sm font-medium">{service.name}</p>
                   <p className="text-zinc-500 text-xs">{service.unit}</p>
+                  {service.description && (
+                    <p className="text-zinc-600 text-xs mt-0.5">{service.description}</p>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-zinc-400 text-sm">{categoryLabels[service.category]}</span>
@@ -57,7 +65,10 @@ export default async function AdminServicesPage() {
                   <span className="text-zinc-400 text-sm">{service._count.orderItems}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <ServiceToggle serviceId={service.id} isActive={service.isActive} />
+                  <ServiceActions
+                    service={service}
+                    hasOrders={service._count.orderItems > 0}
+                  />
                 </td>
               </tr>
             ))}

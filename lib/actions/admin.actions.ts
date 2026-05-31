@@ -3,7 +3,8 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
-import { ComplaintStatus } from "@prisma/client"; 
+import { ComplaintStatus } from "@prisma/client";
+import { ServiceCategory } from "@prisma/client"; 
 
 export async function approveApplication(applicationId: string, masterId: string) {
   const session = await auth();
@@ -102,4 +103,52 @@ export async function resolveComplaint(complaintId: string, status: string) {
   });
 
   revalidatePath("/admin/complaints");
+}
+
+export async function createService(formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  const name = formData.get("name") as string;
+  const category = formData.get("category") as ServiceCategory;
+  const basePrice = parseFloat(formData.get("basePrice") as string);
+  const unit = formData.get("unit") as string;
+  const description = formData.get("description") as string;
+
+  if (!name || !category || !unit || isNaN(basePrice)) return { error: "Заполните все поля" };
+
+  await db.service.create({
+    data: { name, category, basePrice, unit, description: description || null },
+  });
+
+  revalidatePath("/admin/services");
+}
+
+export async function updateService(serviceId: string, formData: FormData) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  const name = formData.get("name") as string;
+  const category = formData.get("category") as ServiceCategory;
+  const basePrice = parseFloat(formData.get("basePrice") as string);
+  const unit = formData.get("unit") as string;
+  const description = formData.get("description") as string;
+
+  if (!name || !category || !unit || isNaN(basePrice)) return { error: "Заполните все поля" };
+
+  await db.service.update({
+    where: { id: serviceId },
+    data: { name, category, basePrice, unit, description: description || null },
+  });
+
+  revalidatePath("/admin/services");
+}
+
+export async function deleteService(serviceId: string) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  await db.service.delete({ where: { id: serviceId } });
+
+  revalidatePath("/admin/services");
 }
