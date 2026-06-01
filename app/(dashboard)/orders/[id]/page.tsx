@@ -61,7 +61,7 @@ export default async function OrderPage({
 
       {/* Детали */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4 mb-6">
-        {order.items.map((item) => (
+        {order.items.map((item: { id: string; service: { name: string }; price: number | string }) => (
           <div key={item.id} className="flex justify-between text-sm">
             <span className="text-zinc-400">{item.service.name}</span>
             <span className="text-white">{item.price} ₴</span>
