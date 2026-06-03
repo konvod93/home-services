@@ -71,7 +71,35 @@ export default function RegisterPage() {
             {error && (
               <p className="text-red-400 text-sm">{error}</p>
             )}
+            <div className="space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-400"
+                />
+                <span className="text-sm text-zinc-400">
+                  Я согласен на{" "}
+                  <a href="/privacy" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
+                    обработку персональных данных
+                  </a>
+                </span>
+              </label>
 
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-400"
+                />
+                <span className="text-sm text-zinc-400">
+                  Я ознакомлен с{" "}
+                  <a href="/terms" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
+                    правилами сервиса
+                  </a>
+                </span>
+              </label>
+            </div>
             <button
               type="submit"
               disabled={loading}
