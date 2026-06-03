@@ -45,21 +45,21 @@ export default async function MasterPage() {
   const done = orders.filter((o) => ["DONE", "CANCELLED"].includes(o.status));
 
   return (
-    <div className="bg-zinc-950">      
+    <div className="bg-zinc-950">
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Статистика */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <p className="text-zinc-500 text-sm mb-1">Новых заказов</p>
-            <p className="text-3xl font-bold text-yellow-400">{pending.length}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+            <p className="text-zinc-500 text-xs mb-1">Новых</p>
+            <p className="text-2xl font-bold text-yellow-400">{pending.length}</p>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <p className="text-zinc-500 text-sm mb-1">Активных</p>
-            <p className="text-3xl font-bold text-amber-400">{active.length}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+            <p className="text-zinc-500 text-xs mb-1">Активных</p>
+            <p className="text-2xl font-bold text-amber-400">{active.length}</p>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <p className="text-zinc-500 text-sm mb-1">Завершённых</p>
-            <p className="text-3xl font-bold text-green-400">{done.length}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+            <p className="text-zinc-500 text-xs mb-1">Готово</p>
+            <p className="text-2xl font-bold text-green-400">{done.length}</p>
           </div>
         </div>
 
