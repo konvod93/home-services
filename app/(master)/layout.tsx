@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/auth";
 import { db } from "@/lib/db";
+import MasterMobileMenu from "@/components/shared/MasterMobileMenu";
 
 export default async function MasterLayout({
   children,
@@ -26,21 +27,19 @@ export default async function MasterLayout({
           <Link href="/master">
             <span className="text-xl font-bold text-white">
               home<span className="text-amber-400">fix</span>
-              <span className="text-zinc-500 text-sm font-normal ml-2">кабинет мастера</span>
+              <span className="text-zinc-500 text-sm font-normal ml-2 hidden sm:inline">кабинет мастера</span>
             </span>
           </Link>
 
-          <div className="flex items-center gap-4">
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-4">
             <Link href="/master" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Заказы
             </Link>
             <Link href="/master/slots" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Мои слоты
             </Link>
-            <Link
-              href="/dashboard"
-              className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors"
-            >
+            <Link href="/dashboard" className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors">
               Режим клиента
             </Link>
             <form action={async () => {
@@ -52,6 +51,9 @@ export default async function MasterLayout({
               </button>
             </form>
           </div>
+
+          {/* Mobile */}
+          <MasterMobileMenu />
         </div>
       </nav>
 

@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/auth";
+import MobileMenu from "@/components/shared/MobileMenu";
 
 export default async function DashboardLayout({
   children,
@@ -9,8 +10,9 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-
   if (!session) redirect("/login");
+
+  const isMaster = session.user.role === "MASTER";
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -22,7 +24,8 @@ export default async function DashboardLayout({
             </span>
           </Link>
 
-          <div className="flex items-center gap-6">
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-6">
             <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Главная
             </Link>
@@ -35,16 +38,11 @@ export default async function DashboardLayout({
             <Link href="/profile" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Профиль
             </Link>
-
-            {session.user.role === "MASTER" && (
-              <Link
-                href="/master"
-                className="text-sm bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 px-3 py-1.5 rounded-lg transition-colors"
-              >
+            {isMaster && (
+              <Link href="/master" className="text-sm bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 px-3 py-1.5 rounded-lg transition-colors">
                 Кабинет мастера
               </Link>
             )}
-
             <form action={async () => {
               "use server";
               await signOut({ redirectTo: "/login" });
@@ -54,6 +52,9 @@ export default async function DashboardLayout({
               </button>
             </form>
           </div>
+
+          {/* Mobile */}
+          <MobileMenu isMaster={isMaster} />
         </div>
       </nav>
 
