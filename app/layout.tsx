@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import DemoModal from "@/components/shared/DemoModal";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${geist.variable} antialiased min-h-screen flex flex-col`}>
+        <DemoModal />
         {children}
       </body>
     </html>
