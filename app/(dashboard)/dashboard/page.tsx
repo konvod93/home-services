@@ -52,6 +52,18 @@ export default async function DashboardPage() {
           <p className="text-3xl font-bold text-green-400">0</p>
         </div>
       </div>
+
+      {session?.user?.role === "ADMIN" && (
+        <Link
+          href="/admin"
+          className="block bg-zinc-900 border border-red-400/20 hover:border-red-400/50 rounded-2xl p-6 transition-all mt-4"
+        >
+          <div className="text-2xl mb-3">⚙️</div>
+          <h2 className="text-white font-semibold mb-1">Админпанель</h2>
+          <p className="text-zinc-500 text-sm">Управление пользователями, заказами и услугами</p>
+        </Link>
+      )}
+
     </div>
   );
 }
