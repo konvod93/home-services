@@ -3,14 +3,21 @@
 import { useState } from "react";
 import { register } from "@/lib/actions/auth.actions";
 import Link from "next/link";
+import TurnstileWidget from "@/components/shared/Turnstile";
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
   async function handleSubmit(formData: FormData) {
+    if (!token) {
+      setError("Пройдите проверку капчи");
+      return;
+    }
     setLoading(true);
     setError(null);
+    formData.append("turnstileToken", token);
     const result = await register(formData);
     if (result?.error) {
       setError(result.error);
@@ -21,8 +28,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-
-        {/* Лого */}
         <div className="mb-10 text-center">
           <span className="text-3xl font-bold tracking-tight text-white">
             home<span className="text-amber-400">fix</span>
@@ -30,7 +35,6 @@ export default function RegisterPage() {
           <p className="text-zinc-500 text-sm mt-2">Сервис домашних мастеров</p>
         </div>
 
-        {/* Карточка */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
           <h1 className="text-xl font-semibold text-white mb-6">Создать аккаунт</h1>
 
@@ -68,9 +72,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            {error && (
-              <p className="text-red-400 text-sm">{error}</p>
-            )}
+            {/* Согласия */}
             <div className="space-y-3">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -100,9 +102,15 @@ export default function RegisterPage() {
                 </span>
               </label>
             </div>
+
+            {/* Капча */}
+            <TurnstileWidget onSuccess={setToken} />
+
+            {error && <p className="text-red-400 text-sm">{error}</p>}
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !token}
               className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? "Регистрируем..." : "Зарегистрироваться"}
@@ -116,7 +124,6 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
-
       </div>
     </div>
   );
