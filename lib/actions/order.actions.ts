@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { sendOrderConfirmation } from "@/lib/email";
 
 export async function createOrder(formData: FormData) {
   const session = await auth();
@@ -20,6 +21,12 @@ export async function createOrder(formData: FormData) {
   const slot = await db.slot.findUnique({ where: { id: slotId } });
   if (!slot || slot.isBusy) return { error: "Слот уже занят" };
 
+  const [service, master, client] = await Promise.all([
+    db.service.findUnique({ where: { id: serviceId } }),
+    db.master.findUnique({ where: { id: masterId }, include: { user: { select: { name: true } } } }),
+    db.user.findUnique({ where: { id: session.user.id }, select: { name: true, email: true } }),
+  ]);
+
   const order = await db.order.create({
     data: {
       clientId: session.user.id,
@@ -29,11 +36,7 @@ export async function createOrder(formData: FormData) {
       comment: comment || null,
       totalPrice: price,
       items: {
-        create: {
-          serviceId,
-          quantity: 1,
-          price,
-        },
+        create: { serviceId, quantity: 1, price },
       },
     },
   });
@@ -42,6 +45,19 @@ export async function createOrder(formData: FormData) {
     where: { id: slotId },
     data: { isBusy: true },
   });
+
+  // Отправляем email
+  if (client?.email && service && master) {
+    await sendOrderConfirmation({
+      clientEmail: client.email,
+      clientName: client.name,
+      serviceName: service.name,
+      masterName: master.user.name,
+      date: new Date(slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
+      time: new Date(slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+      address,
+    });
+  }
 
   redirect(`/orders/${order.id}`);
 }
