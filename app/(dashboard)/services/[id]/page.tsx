@@ -96,6 +96,12 @@ export default async function ServicePage({
                   <h3 className="text-white font-semibold">
                     {master.user.name}
                   </h3>
+                  <Link
+                    href={`/masters/${master.id}`}
+                    className="text-xs text-zinc-500 hover:text-amber-400 transition-colors mt-1 inline-block"
+                  >
+                    Профиль и отзывы →
+                  </Link>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-amber-400 text-sm">
                       ★ {master.rating > 0 ? master.rating.toFixed(1) : "Новый"}
