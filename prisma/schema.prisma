@@ -66,6 +66,7 @@ model Master {
   orders       Order[]           @relation("MasterOrders")
   application  MasterApplication?
   complaints  Complaint[]
+  unblockRequest UnblockRequest?
 }
 
 model Service {
@@ -191,4 +192,15 @@ model Complaint {
   order  Order  @relation(fields: [orderId], references: [id])
   client User   @relation("ClientComplaints", fields: [clientId], references: [id])
   master Master @relation(fields: [masterId], references: [id])
+}
+
+model UnblockRequest {
+  id        String   @id @default(cuid())
+  masterId  String   @unique
+  reason    String
+  documents String[]
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+
+  master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
 }

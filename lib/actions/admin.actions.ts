@@ -162,3 +162,32 @@ export async function deleteService(serviceId: string) {
 
   revalidatePath("/admin/services");
 }
+
+export async function approveUnblock(requestId: string, masterId: string) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  await db.unblockRequest.update({
+    where: { id: requestId },
+    data: { status: "APPROVED" },
+  });
+
+  await db.master.update({
+    where: { id: masterId },
+    data: { isActive: true },
+  });
+
+  revalidatePath("/admin/unblock");
+}
+
+export async function rejectUnblock(requestId: string) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+
+  await db.unblockRequest.update({
+    where: { id: requestId },
+    data: { status: "REJECTED" },
+  });
+
+  revalidatePath("/admin/unblock");
+}

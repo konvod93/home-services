@@ -37,6 +37,9 @@ export default async function AdminLayout({
             <Link href="/admin/complaints" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Жалобы
             </Link>
+            <Link href="/admin/unblock" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              Разблокирование
+            </Link>
             <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-white transition-colors">
               ← На сайт
             </Link>

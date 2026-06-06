@@ -4,6 +4,7 @@ import Link from "next/link";
 import { signOut } from "@/auth";
 import { db } from "@/lib/db";
 import MasterMobileMenu from "@/components/shared/MasterMobileMenu";
+import BlockedModal from "@/components/shared/BlockedModal";
 
 export default async function MasterLayout({
   children,
@@ -18,7 +19,11 @@ export default async function MasterLayout({
     where: { userId: session.user.id },
   });
 
-  if (!master || !master.isActive) redirect("/dashboard");
+  if (!master) redirect("/dashboard");
+
+  if (!master.isActive) {
+    return <BlockedModal />;
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -31,7 +36,6 @@ export default async function MasterLayout({
             </span>
           </Link>
 
-          {/* Desktop */}
           <div className="hidden md:flex items-center gap-4">
             <Link href="/master" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Заказы
@@ -52,7 +56,6 @@ export default async function MasterLayout({
             </form>
           </div>
 
-          {/* Mobile */}
           <MasterMobileMenu />
         </div>
       </nav>
