@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { sendOrderConfirmation } from "@/lib/email";
+import { sendOrderConfirmation, sendNewOrderNotificationToMaster } from "@/lib/email";
 
 export async function createOrder(formData: FormData) {
   const session = await auth();
@@ -59,5 +59,26 @@ export async function createOrder(formData: FormData) {
     });
   }
 
+  if (master) {
+  const masterUser = await db.user.findUnique({
+    where: { id: master.userId },
+    select: { email: true },
+  });
+
+  if (masterUser?.email && service && client) {
+    await sendNewOrderNotificationToMaster({
+      masterEmail: masterUser.email,
+      masterName: master.user.name,
+      clientName: client.name,
+      serviceName: service.name,
+      date: new Date(slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
+      time: new Date(slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+      address,
+      comment: comment || null,      
+    });
+  }
+}
+
   redirect(`/orders/${order.id}`);
 }
+

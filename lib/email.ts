@@ -92,13 +92,13 @@ export async function sendComplaintNotificationToAdmin({
   clientName,
   masterName,
   serviceName,
-  reason,  
+  reason,
 }: {
   adminEmail: string;
   clientName: string;
   masterName: string;
   serviceName: string;
-  reason: string;  
+  reason: string;
 }) {
   await resend.emails.send({
     from: "homefix <onboarding@resend.dev>",
@@ -173,6 +173,53 @@ export async function sendMasterUnblockedNotification({
         <a href="https://konvod-home-services.vercel.app/master"
            style="display: inline-block; background: #fbbf24; color: #0a0a0a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;">
           Перейти в кабинет мастера
+        </a>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+        <p style="color: #999; font-size: 12px;">homefix — сервис домашних мастеров</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendNewOrderNotificationToMaster({
+  masterEmail,
+  masterName,
+  clientName,
+  serviceName,
+  date,
+  time,
+  address,
+  comment,
+  }: {
+  masterEmail: string;
+  masterName: string;
+  clientName: string;
+  serviceName: string;
+  date: string;
+  time: string;
+  address: string;
+  comment?: string | null;  
+}) {
+  await resend.emails.send({
+    from: "homefix <onboarding@resend.dev>",
+    to: masterEmail,
+    subject: `Новый заказ — ${serviceName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 24px;">
+        <h2 style="color: #0a0a0a;">Новый заказ 🔧</h2>
+        <p>Привет, ${masterName}!</p>
+        <p>У вас новый заказ. Подтвердите его в кабинете мастера.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+          <tr><td style="padding: 8px 0; color: #666;">Услуга</td><td style="padding: 8px 0; font-weight: 600;">${serviceName}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666;">Клиент</td><td style="padding: 8px 0; font-weight: 600;">${clientName}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666;">Дата</td><td style="padding: 8px 0; font-weight: 600;">${date}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666;">Время</td><td style="padding: 8px 0; font-weight: 600;">${time}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666;">Адрес</td><td style="padding: 8px 0; font-weight: 600;">${address}</td></tr>
+          ${comment ? `<tr><td style="padding: 8px 0; color: #666;">Комментарий</td><td style="padding: 8px 0;">${comment}</td></tr>` : ""}
+        </table>
+        <a href="https://konvod-home-services.vercel.app/master"
+           style="display: inline-block; background: #fbbf24; color: #0a0a0a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;">
+          Перейти в кабинет
         </a>
         <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
         <p style="color: #999; font-size: 12px;">homefix — сервис домашних мастеров</p>
