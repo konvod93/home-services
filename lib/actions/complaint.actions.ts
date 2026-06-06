@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { sendComplaintNotificationToAdmin } from "@/lib/email";
 
 export async function submitComplaint(formData: FormData) {
   const session = await auth();
@@ -16,7 +17,12 @@ export async function submitComplaint(formData: FormData) {
 
   const order = await db.order.findUnique({
     where: { id: orderId },
-    include: { complaint: true },
+    include: {
+      complaint: true,
+      client: { select: { name: true } },
+      master: { include: { user: { select: { name: true } } } },
+      items: { include: { service: true } },
+    },
   });
 
   if (!order || order.clientId !== session.user.id) return { error: "Заказ не найден" };
@@ -31,6 +37,22 @@ export async function submitComplaint(formData: FormData) {
       photos,
     },
   });
+
+  // Находим админа и отправляем уведомление
+  const admin = await db.user.findFirst({
+    where: { role: "ADMIN" },
+    select: { email: true },
+  });
+
+  if (admin?.email) {
+    await sendComplaintNotificationToAdmin({
+      adminEmail: admin.email,
+      clientName: order.client.name,
+      masterName: order.master.user.name,
+      serviceName: order.items[0]?.service.name ?? "Услуга",
+      reason,      
+    });
+  }
 
   revalidatePath(`/orders/${orderId}`);
   return { success: true };

@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { ComplaintStatus } from "@prisma/client";
 import { ServiceCategory } from "@prisma/client";
+import { sendMasterBlockedNotification, sendMasterUnblockedNotification } from "@/lib/email";
 
 export async function approveApplication(applicationId: string, masterId: string) {
   const session = await auth();
@@ -94,10 +95,18 @@ export async function toggleMasterBlock(masterId: string, isActive: boolean) {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
 
-  await db.master.update({
+  const master = await db.master.update({
     where: { id: masterId },
     data: { isActive },
+    include: { user: { select: { name: true, email: true } } },
   });
+
+  if (!isActive) {
+    await sendMasterBlockedNotification({
+      masterEmail: master.user.email,
+      masterName: master.user.name,
+    });
+  }
 
   revalidatePath("/admin/masters");
   revalidatePath("/admin/complaints");
@@ -172,9 +181,15 @@ export async function approveUnblock(requestId: string, masterId: string) {
     data: { status: "APPROVED" },
   });
 
-  await db.master.update({
+  const master = await db.master.update({
     where: { id: masterId },
     data: { isActive: true },
+    include: { user: { select: { name: true, email: true } } },
+  });
+
+  await sendMasterUnblockedNotification({
+    masterEmail: master.user.email,
+    masterName: master.user.name,
   });
 
   revalidatePath("/admin/unblock");
@@ -191,3 +206,4 @@ export async function rejectUnblock(requestId: string) {
 
   revalidatePath("/admin/unblock");
 }
+
