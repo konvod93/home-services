@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { db } from "@/lib/db";
 import AdminMobileMenu from "./AdminMobileMenu";
 
 export default async function AdminLayout({
@@ -10,6 +11,12 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
+
+  const [pendingApplications, pendingComplaints, pendingUnblock] = await Promise.all([
+    db.masterApplication.count({ where: { status: "PENDING" } }),
+    db.complaint.count({ where: { status: "PENDING" } }),
+    db.unblockRequest.count({ where: { status: "PENDING" } }),
+  ]);
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -22,18 +29,43 @@ export default async function AdminLayout({
 
           {/* Desktop */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/admin" className="text-sm text-zinc-400 hover:text-white transition-colors">Заявки</Link>
+            <Link href="/admin" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
+              Заявки
+              {pendingApplications > 0 && (
+                <span className="bg-amber-400 text-zinc-900 text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+                  {pendingApplications}
+                </span>
+              )}
+            </Link>
             <Link href="/admin/masters" className="text-sm text-zinc-400 hover:text-white transition-colors">Мастера</Link>
             <Link href="/admin/users" className="text-sm text-zinc-400 hover:text-white transition-colors">Пользователи</Link>
             <Link href="/admin/orders" className="text-sm text-zinc-400 hover:text-white transition-colors">Заказы</Link>
             <Link href="/admin/services" className="text-sm text-zinc-400 hover:text-white transition-colors">Услуги</Link>
-            <Link href="/admin/complaints" className="text-sm text-zinc-400 hover:text-white transition-colors">Жалобы</Link>
-            <Link href="/admin/unblock" className="text-sm text-zinc-400 hover:text-white transition-colors">Разблокирование</Link>
+            <Link href="/admin/complaints" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
+              Жалобы
+              {pendingComplaints > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+                  {pendingComplaints}
+                </span>
+              )}
+            </Link>
+            <Link href="/admin/unblock" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
+              Разблокирование
+              {pendingUnblock > 0 && (
+                <span className="bg-yellow-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+                  {pendingUnblock}
+                </span>
+              )}
+            </Link>
             <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-white transition-colors">← На сайт</Link>
           </div>
 
           {/* Mobile */}
-          <AdminMobileMenu />
+          <AdminMobileMenu
+            pendingApplications={pendingApplications}
+            pendingComplaints={pendingComplaints}
+            pendingUnblock={pendingUnblock}
+          />
         </div>
       </nav>
 
