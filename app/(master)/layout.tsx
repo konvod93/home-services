@@ -46,6 +46,9 @@ export default async function MasterLayout({
             <Link href="/dashboard" className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors">
               Режим клиента
             </Link>
+            <Link href="/master/settings" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              Налаштування
+            </Link>
             <form action={async () => {
               "use server";
               await signOut({ redirectTo: "/login" });

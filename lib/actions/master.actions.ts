@@ -33,3 +33,28 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
   revalidatePath("/master");
 }
+
+export async function updateMasterSettings(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Необходима авторизация" };
+  if (session.user.role !== "MASTER") return { error: "Нет доступа" };
+
+  const masterId = formData.get("masterId") as string;
+  const bio = formData.get("bio") as string;
+  const region = formData.get("region") as string;
+  const city = formData.get("city") as string;
+  const district = formData.get("district") as string;
+
+  await db.master.update({
+    where: { id: masterId },
+    data: {
+      bio: bio || null,
+      region: region || null,
+      city: city || null,
+      district: district || null,
+    },
+  });
+
+  revalidatePath("/master/settings");
+  return { success: true };
+}

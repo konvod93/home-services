@@ -37,9 +37,9 @@ export default async function ServicePage({
 
   const user = session?.user?.id
     ? await db.user.findUnique({
-        where: { id: session.user.id },
-        select: { city: true, district: true, region: true },
-      })
+      where: { id: session.user.id },
+      select: { city: true, district: true, region: true },
+    })
     : null;
 
   const filterCity = cityFilter || user?.city || "";
@@ -162,10 +162,10 @@ export default async function ServicePage({
                           {master.user.name}
                         </Link>
                       </h3>
-                      {score >= 3 && (
+                      {score >= 3 && master.district?.toLowerCase() === user?.district?.toLowerCase() && (
                         <span className="text-xs bg-amber-400/10 text-amber-400 px-2 py-0.5 rounded-full">ваш район</span>
                       )}
-                      {score === 2 && (
+                      {master.district?.toLowerCase() !== user?.district?.toLowerCase() && score >= 2 && (
                         <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">ваше місто</span>
                       )}
                     </div>
