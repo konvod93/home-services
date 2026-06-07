@@ -23,6 +23,9 @@ export async function register(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const turnstileToken = formData.get("turnstileToken") as string;
+  const region = formData.get("region") as string;
+  const city = formData.get("city") as string;
+  const district = formData.get("district") as string;
 
   if (!name || !email || !password) {
     return { error: "Заполните все поля" };
@@ -41,7 +44,14 @@ export async function register(formData: FormData) {
   const hashed = await bcrypt.hash(password, 12);
 
   await db.user.create({
-    data: { name, email, password: hashed },
+    data: {
+      name,
+      email,
+      password: hashed,
+      region: region || null,
+      city: city || null,
+      district: district || null,
+    },
   });
 
   await signIn("credentials", { email, password, redirectTo: "/dashboard" });

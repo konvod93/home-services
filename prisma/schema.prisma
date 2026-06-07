@@ -15,19 +15,19 @@ enum Role {
 }
 
 enum OrderStatus {
-  PENDING      // ожидает подтверждения
-  CONFIRMED    // мастер принял
-  IN_PROGRESS  // мастер на месте
-  DONE         // выполнен
-  CANCELLED    // отменён
+  PENDING // ожидает подтверждения
+  CONFIRMED // мастер принял
+  IN_PROGRESS // мастер на месте
+  DONE // выполнен
+  CANCELLED // отменён
 }
 
 enum ServiceCategory {
-  PLUMBING      // сантехника
-  ELECTRICAL    // электрика
-  RENOVATION    // ремонт
-  CLEANING      // уборка
-  FURNITURE     // сборка мебели
+  PLUMBING // сантехника
+  ELECTRICAL // электрика
+  RENOVATION // ремонт
+  CLEANING // уборка
+  FURNITURE // сборка мебели
   OTHER
 }
 
@@ -40,13 +40,15 @@ model User {
   phone     String?
   password  String
   role      Role     @default(CLIENT)
+  region    String?
+  city      String?
+  district  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orders  Order[]  @relation("ClientOrders")
-  master  Master?
-  complaints  Complaint[] @relation("ClientComplaints")
-  
+  orders     Order[]     @relation("ClientOrders")
+  master     Master?
+  complaints Complaint[] @relation("ClientComplaints")
 }
 
 model Master {
@@ -57,15 +59,18 @@ model Master {
   reviewCount Int      @default(0)
   isActive    Boolean  @default(true)
   isVerified  Boolean  @default(false)
+  region      String?
+  city        String?
+  district    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  services     MasterService[]
-  slots        Slot[]
-  orders       Order[]           @relation("MasterOrders")
-  application  MasterApplication?
-  complaints  Complaint[]
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services       MasterService[]
+  slots          Slot[]
+  orders         Order[]            @relation("MasterOrders")
+  application    MasterApplication?
+  complaints     Complaint[]
   unblockRequest UnblockRequest?
 }
 
@@ -79,12 +84,12 @@ model Service {
   isActive    Boolean         @default(true)
   createdAt   DateTime        @default(now())
 
-  masters     MasterService[]
-  orderItems  OrderItem[]
+  masters    MasterService[]
+  orderItems OrderItem[]
 }
 
 model MasterService {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   masterId  String
   serviceId String
   price     Float
@@ -108,30 +113,30 @@ model Slot {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  clientId    String
-  masterId    String
-  slotId      String      @unique
-  status      OrderStatus @default(PENDING)
-  address     String
-  comment     String?
-  totalPrice  Float
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id         String      @id @default(cuid())
+  clientId   String
+  masterId   String
+  slotId     String      @unique
+  status     OrderStatus @default(PENDING)
+  address    String
+  comment    String?
+  totalPrice Float
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  client     User        @relation("ClientOrders", fields: [clientId], references: [id])
-  master     Master      @relation("MasterOrders", fields: [masterId], references: [id])
-  slot       Slot        @relation(fields: [slotId], references: [id])
-  items      OrderItem[]
-  review     Review?
-  complaint   Complaint?
+  client    User        @relation("ClientOrders", fields: [clientId], references: [id])
+  master    Master      @relation("MasterOrders", fields: [masterId], references: [id])
+  slot      Slot        @relation(fields: [slotId], references: [id])
+  items     OrderItem[]
+  review    Review?
+  complaint Complaint?
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   orderId   String
   serviceId String
-  quantity  Int     @default(1)
+  quantity  Int    @default(1)
   price     Float
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -156,18 +161,18 @@ enum ApplicationStatus {
 }
 
 model MasterApplication {
-  id          String            @id @default(cuid())
-  masterId    String            @unique
-  status      ApplicationStatus @default(PENDING)
-  bio         String?
-  experience  Int
-  documents   String[]
-  idPhoto     String?
-  categories  ServiceCategory[]
-  serviceIds  String[]
-  comment     String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id         String            @id @default(cuid())
+  masterId   String            @unique
+  status     ApplicationStatus @default(PENDING)
+  bio        String?
+  experience Int
+  documents  String[]
+  idPhoto    String?
+  categories ServiceCategory[]
+  serviceIds String[]
+  comment    String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
 
   master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
 }
@@ -179,15 +184,15 @@ enum ComplaintStatus {
 }
 
 model Complaint {
-  id          String          @id @default(cuid())
-  orderId     String          @unique
-  clientId    String
-  masterId    String
-  reason      String
-  photos      String[]
-  status      ComplaintStatus @default(PENDING)
-  adminNote   String?
-  createdAt   DateTime        @default(now())
+  id        String          @id @default(cuid())
+  orderId   String          @unique
+  clientId  String
+  masterId  String
+  reason    String
+  photos    String[]
+  status    ComplaintStatus @default(PENDING)
+  adminNote String?
+  createdAt DateTime        @default(now())
 
   order  Order  @relation(fields: [orderId], references: [id])
   client User   @relation("ClientComplaints", fields: [clientId], references: [id])

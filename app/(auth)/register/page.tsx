@@ -70,6 +70,35 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
               />
+              <div>
+                <label className="block text-sm text-zinc-400 mb-1.5">Область</label>
+                <input
+                  name="region"
+                  type="text"
+                  placeholder="Харківська"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-zinc-400 mb-1.5">Місто / Населений пункт</label>
+                <input
+                  name="city"
+                  type="text"
+                  placeholder="Харків"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов`язково)</span></label>
+                <input
+                  name="district"
+                  type="text"
+                  placeholder="Олексіївка"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
             </div>
 
             {/* Согласия */}

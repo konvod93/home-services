@@ -133,6 +133,37 @@ export default function BecomeMasterForm({ services }: Props) {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
+        <div>
+          <label className="block text-sm text-zinc-400 mb-1.5">Область</label>
+          <input
+            name="region"
+            type="text"
+            required
+            placeholder="Харківська"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-zinc-400 mb-1.5">Місто / Населений пункт</label>
+          <input
+            name="city"
+            type="text"
+            required
+            placeholder="Харків"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов`язково)</span></label>
+          <input
+            name="district"
+            type="text"
+            placeholder="Олексіївка"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+          />
+        </div>
       </div>
 
       {/* Шаг 1 — Категории */}
@@ -148,8 +179,8 @@ export default function BecomeMasterForm({ services }: Props) {
               type="button"
               onClick={() => toggleCategory(cat.value)}
               className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${selectedCategories.includes(cat.value)
-                  ? "bg-amber-400/10 border-amber-400 text-amber-400"
-                  : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                ? "bg-amber-400/10 border-amber-400 text-amber-400"
+                : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
                 }`}
             >
               {cat.label}
@@ -172,8 +203,8 @@ export default function BecomeMasterForm({ services }: Props) {
                 type="button"
                 onClick={() => toggleService(service.id)}
                 className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${selectedServices.includes(service.id)
-                    ? "bg-amber-400/10 border-amber-400 text-white"
-                    : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                  ? "bg-amber-400/10 border-amber-400 text-white"
+                  : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
                   }`}
               >
                 <span>{service.name}</span>
