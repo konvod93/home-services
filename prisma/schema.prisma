@@ -112,24 +112,36 @@ model Slot {
   order  Order?
 }
 
-model Order {
-  id         String      @id @default(cuid())
-  clientId   String
-  masterId   String
-  slotId     String      @unique
-  status     OrderStatus @default(PENDING)
-  address    String
-  comment    String?
-  totalPrice Float
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+enum PaymentStatus {
+  PENDING
+  HELD
+  RELEASED
+  REFUNDED
+  DISPUTED
+}
 
-  client    User        @relation("ClientOrders", fields: [clientId], references: [id])
-  master    Master      @relation("MasterOrders", fields: [masterId], references: [id])
-  slot      Slot        @relation(fields: [slotId], references: [id])
-  items     OrderItem[]
-  review    Review?
-  complaint Complaint?
+model Order {
+  id              String        @id @default(cuid())
+  clientId        String
+  masterId        String
+  slotId          String        @unique
+  status          OrderStatus   @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  address         String
+  comment         String?
+  totalPrice      Float
+  liqpayOrderId   String?
+  commissionPct   Float         @default(10)
+  heldAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  client     User        @relation("ClientOrders", fields: [clientId], references: [id])
+  master     Master      @relation("MasterOrders", fields: [masterId], references: [id])
+  slot       Slot        @relation(fields: [slotId], references: [id])
+  items      OrderItem[]
+  review     Review?
+  complaint  Complaint?
 }
 
 model OrderItem {
