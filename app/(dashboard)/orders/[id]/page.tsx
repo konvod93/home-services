@@ -7,6 +7,8 @@ import LiqpayButton from "@/components/shared/LiqpayButton";
 import { createPaymentParams } from "@/lib/liqpay";
 import ConfirmOrderButton from "./ConfirmOrderButton";
 
+export const dynamic = "force-dynamic";
+
 const statusLabels: Record<string, string> = {
   PENDING: "Очікує підтвердження",
   CONFIRMED: "Підтверджено",

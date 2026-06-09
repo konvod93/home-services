@@ -14,18 +14,18 @@ export async function POST(req: NextRequest) {
   const payload = decodeLiqpayData(data);
   const { order_id, status } = payload;
 
-  if (status === "hold_wait") {
+  if (status === "hold_wait" || (status === "sandbox" && payload.action === "hold")) {
     await db.order.update({
       where: { id: order_id },
       data: {
         paymentStatus: "HELD",
-        liqpayOrderId: payload.payment_id,
+        liqpayOrderId: String(payload.payment_id),
         heldAt: new Date(),
       },
     });
   }
 
-  if (status === "success") {
+  if (status === "success" || (status === "sandbox" && payload.action === "pay")) {
     await db.order.update({
       where: { id: order_id },
       data: { paymentStatus: "RELEASED" },

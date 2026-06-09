@@ -1,4 +1,21 @@
 import { db } from "@/lib/db";
+import DisputeActions from "./DisputeActions";
+
+const paymentStatusLabels: Record<string, string> = {
+  PENDING: "Очікує оплати",
+  HELD: "Заморожено",
+  RELEASED: "Оплачено",
+  REFUNDED: "Повернено",
+  DISPUTED: "Спір",
+};
+
+const paymentStatusColors: Record<string, string> = {
+  PENDING: "text-zinc-400 bg-zinc-800",
+  HELD: "text-blue-400 bg-blue-400/10",
+  RELEASED: "text-green-400 bg-green-400/10",
+  REFUNDED: "text-amber-400 bg-amber-400/10",
+  DISPUTED: "text-red-400 bg-red-400/10",
+};
 
 const statusLabels: Record<string, string> = {
   PENDING: "Ожидает",
@@ -74,6 +91,7 @@ export default async function AdminOrdersPage() {
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дата</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Сумма</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Статус</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дії</th>
             </tr>
           </thead>
           <tbody>
@@ -101,10 +119,21 @@ export default async function AdminOrdersPage() {
                   <p className="text-amber-400 text-sm font-medium">{order.totalPrice} ₴</p>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[order.status]}`}>
-                    {statusLabels[order.status]}
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full w-fit ${statusColors[order.status]}`}>
+                      {statusLabels[order.status]}
+                    </span>
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full w-fit ${paymentStatusColors[order.paymentStatus]}`}>
+                      {paymentStatusLabels[order.paymentStatus]}
+                    </span>
+                  </div>
                 </td>
+                <td className="px-6 py-4">
+                  {order.paymentStatus === "DISPUTED" && (
+                    <DisputeActions orderId={order.id} />
+                  )}
+                </td>
+
               </tr>
             ))}
           </tbody>
