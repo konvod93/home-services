@@ -21,8 +21,19 @@ export async function submitUnblockRequest(formData: FormData) {
 
   if (existing) return { error: "Заявка уже подана" };
 
-  await db.unblockRequest.create({
-    data: { masterId, reason, documents },
+  await db.unblockRequest.upsert({
+    where: { masterId },
+    create: {
+      masterId,
+      reason,
+      documents,
+      status: "PENDING",
+    },
+    update: {
+      reason,
+      documents,
+      status: "PENDING",
+    },
   });
 
   redirect("/master/unblock");
