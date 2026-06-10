@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function submitUnblockRequest(formData: FormData) {
   const session = await auth();
@@ -39,6 +40,8 @@ export async function submitUnblockRequest(formData: FormData) {
       status: "PENDING",
     },
   });
+
+  revalidatePath("/master/unblock");
 
   redirect("/master/unblock");
 }
