@@ -95,6 +95,12 @@ export async function toggleMasterBlock(masterId: string, isActive: boolean) {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
 
+  if (!isActive) {
+    await db.unblockRequest.deleteMany({
+      where: { masterId },
+    });    
+  }
+
   const master = await db.master.update({
     where: { id: masterId },
     data: { isActive },
