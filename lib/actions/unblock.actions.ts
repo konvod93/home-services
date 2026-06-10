@@ -19,7 +19,11 @@ export async function submitUnblockRequest(formData: FormData) {
     where: { masterId },
   });
 
-  if (existing) return { error: "Заявка уже подана" };
+  // if (existing) return { error: "Заявка уже подана" };
+
+  if (existing && existing.status === "PENDING") {
+    return { error: "Заявка уже находится на рассмотрении" };
+  }
 
   await db.unblockRequest.upsert({
     where: { masterId },
