@@ -38,6 +38,14 @@ export async function submitComplaint(formData: FormData) {
     },
   });
 
+  // Меняем статус платежа на DISPUTED
+  if (order.paymentStatus === "HELD") {
+    await db.order.update({
+      where: { id: orderId },
+      data: { paymentStatus: "DISPUTED" },
+    });
+  }
+
   // Находим админа и отправляем уведомление
   const admin = await db.user.findFirst({
     where: { role: "ADMIN" },
@@ -50,7 +58,7 @@ export async function submitComplaint(formData: FormData) {
       clientName: order.client.name,
       masterName: order.master.user.name,
       serviceName: order.items[0]?.service.name ?? "Услуга",
-      reason,      
+      reason,
     });
   }
 
