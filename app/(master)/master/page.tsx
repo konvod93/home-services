@@ -36,7 +36,8 @@ export default async function MasterPage() {
     include: {
       items: { include: { service: true } },
       client: { select: { name: true, phone: true } },
-      slot: true,           
+      slot: true,
+      quote: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -86,7 +87,7 @@ export default async function MasterPage() {
                     <p>🗓 {new Date(order.slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long" })} в {new Date(order.slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</p>
                     {order.comment && <p>💬 {order.comment}</p>}
                   </div>
-                  <OrderStatusForm orderId={order.id} currentStatus={order.status} paymentStatus={order.paymentStatus} />
+                  <OrderStatusForm orderId={order.id} currentStatus={order.status} paymentStatus={order.paymentStatus} hasQuote={!!order.quote} />
                 </div>
               ))}
             </div>
@@ -115,15 +116,16 @@ export default async function MasterPage() {
                     {order.status === "CONFIRMED" && (
                       <Link
                         href={`/master/orders/${order.id}/quote`}
-                        className="text-sm bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 font-medium px-4 py-2 rounded-lg transition-colors"
+                        className="text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium px-4 py-2 rounded-lg transition-colors"
                       >
-                        Заповнити калькуляцію
+                        {order.quote ? "Переглянути калькуляцію" : "Заповнити калькуляцію"}
                       </Link>
                     )}
                     <OrderStatusForm
                       orderId={order.id}
                       currentStatus={order.status}
                       paymentStatus={order.paymentStatus}
+                      hasQuote={!!order.quote}
                     />
                   </div>
                 </div>
