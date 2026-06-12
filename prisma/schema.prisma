@@ -142,6 +142,7 @@ model Order {
   items      OrderItem[]
   review     Review?
   complaint  Complaint?
+  quote      Quote?
 }
 
 model OrderItem {
@@ -220,4 +221,15 @@ model UnblockRequest {
   createdAt DateTime @default(now())
 
   master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+}
+
+model Quote {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  items       Json     // [{name, quantity, unit, price}]
+  totalPrice  Float
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

@@ -13,6 +13,7 @@ const cancelAllowed = ["PENDING", "CONFIRMED"];
 interface Props {
   orderId: string;
   currentStatus: string;
+  paymentStatus: string;
 }
 
 export default function OrderStatusForm({ orderId, currentStatus }: Props) {

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import OrderStatusForm from "./OrderStatusForm";
+import Link from "next/link";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Ожидает",
@@ -35,7 +36,7 @@ export default async function MasterPage() {
     include: {
       items: { include: { service: true } },
       client: { select: { name: true, phone: true } },
-      slot: true,
+      slot: true,           
     },
     orderBy: { createdAt: "desc" },
   });
@@ -85,7 +86,7 @@ export default async function MasterPage() {
                     <p>🗓 {new Date(order.slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long" })} в {new Date(order.slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</p>
                     {order.comment && <p>💬 {order.comment}</p>}
                   </div>
-                  <OrderStatusForm orderId={order.id} currentStatus={order.status} />
+                  <OrderStatusForm orderId={order.id} currentStatus={order.status} paymentStatus={order.paymentStatus} />
                 </div>
               ))}
             </div>
@@ -109,7 +110,22 @@ export default async function MasterPage() {
                     </span>
                   </div>
                   <p className="text-zinc-400 text-sm mb-4">📍 {order.address}</p>
-                  <OrderStatusForm orderId={order.id} currentStatus={order.status} />
+
+                  <div className="flex gap-2 flex-wrap">
+                    {order.status === "CONFIRMED" && (
+                      <Link
+                        href={`/master/orders/${order.id}/quote`}
+                        className="text-sm bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 font-medium px-4 py-2 rounded-lg transition-colors"
+                      >
+                        Заповнити калькуляцію
+                      </Link>
+                    )}
+                    <OrderStatusForm
+                      orderId={order.id}
+                      currentStatus={order.status}
+                      paymentStatus={order.paymentStatus}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
