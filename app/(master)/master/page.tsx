@@ -113,7 +113,7 @@ export default async function MasterPage() {
                   <p className="text-zinc-400 text-sm mb-4">📍 {order.address}</p>
 
                   <div className="flex gap-2 flex-wrap">
-                    {order.status === "CONFIRMED" && (
+                    {order.status === "CONFIRMED" && order.paymentStatus === "PENDING" && (
                       <Link
                         href={`/master/orders/${order.id}/quote`}
                         className="text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium px-4 py-2 rounded-lg transition-colors"
