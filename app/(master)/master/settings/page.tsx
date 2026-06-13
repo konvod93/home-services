@@ -10,7 +10,7 @@ export default async function MasterSettingsPage() {
 
   const master = await db.master.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, bio: true, city: true, district: true, region: true },
+    select: { id: true, bio: true, city: true, district: true, region: true, phone: true },
   });
 
   if (!master) redirect("/dashboard");

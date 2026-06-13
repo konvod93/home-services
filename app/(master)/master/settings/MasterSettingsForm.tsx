@@ -10,6 +10,7 @@ interface Props {
     city: string | null;
     district: string | null;
     region: string | null;
+    phone: string | null;
   };
 }
 
@@ -43,6 +44,21 @@ export default function MasterSettingsForm({ master }: Props) {
           defaultValue={master.bio ?? ""}
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-400 transition-colors resize-none"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm text-zinc-400 mb-1.5">
+          Телефон <span className="text-red-400">*</span>
+        </label>
+        <input
+          name="phone"
+          type="tel"
+          required
+          defaultValue={master.phone ?? ""}
+          placeholder="+380 00 000 00 00"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+        />
+        <p className="text-zinc-600 text-xs mt-1">Буде показано клієнту після оплати замовлення</p>
       </div>
 
       <div>

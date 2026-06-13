@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import OrderStatusForm from "./OrderStatusForm";
 import Link from "next/link";
+import MasterForceCancel from "./MasterForceCancel";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Ожидает",
@@ -127,6 +128,9 @@ export default async function MasterPage() {
                       paymentStatus={order.paymentStatus}
                       hasQuote={!!order.quote}
                     />
+                    {order.status === "IN_PROGRESS" && (
+                      <MasterForceCancel orderId={order.id} />
+                    )}
                   </div>
                 </div>
               ))}

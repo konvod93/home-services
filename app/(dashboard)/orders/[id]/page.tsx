@@ -6,6 +6,7 @@ import ComplaintForm from "./ComplaintForm";
 import LiqpayButton from "@/components/shared/LiqpayButton";
 import { createPaymentParams } from "@/lib/liqpay";
 import ConfirmOrderButton from "./ConfirmOrderButton";
+import ClientCancelButton from "./ClientCancelButton";
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +56,12 @@ export default async function OrderPage({
     where: { id },
     include: {
       items: { include: { service: true } },
-      master: { include: { user: { select: { name: true, phone: true } } } },
+      master: {
+        select: {
+          phone: true,
+          user: { select: { name: true, phone: true } }
+        }
+      },
       slot: true,
       review: true,
       complaint: true,
@@ -181,39 +187,79 @@ export default async function OrderPage({
         </div>
       )}
 
-      {!order.quote && order.status === "CONFIRMED" && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-4">
-          <p className="text-zinc-500 text-sm">⏳ Очікуємо калькуляцію від майстра...</p>
-        </div>
+      {/* Відмова клієнта після оплати */}
+      {order.paymentStatus === "HELD" && order.status !== "DONE" && order.status !== "CANCELLED" && !order.complaint && (
+        <ClientCancelButton orderId={order.id} />
       )}
+
+      {/* Контакти мастера після оплати */}
+      {order.paymentStatus === "HELD" && (
+        <div className="bg-zinc-900 border border-amber-400/20 rounded-2xl p-5 mb-6">
+          <h2 className="text-white font-semibold mb-3">Контакти майстра</h2>
+          <p className="text-zinc-400 text-sm mb-1">{order.master.user.name}</p>
+          {order.master.phone ? (
+
+            <a href={`tel:${order.master.phone}`}
+              className="text-amber-400 font-medium hover:text-amber-300 transition-colors"
+            >
+              {order.master.phone}
+            </a>
+          ) : (
+            <p className="text-zinc-500 text-sm">Телефон не вказано</p>
+          )}
+          <p className="text-zinc-600 text-xs mt-3">
+            Якщо майстер не з`явився вчасно —{" "}
+            <a href="mailto:admin@homefix.com" className="text-zinc-400 hover:text-white transition-colors">
+              зв`яжіться з адміністратором
+            </a>
+          </p>
+        </div>
+      )
+      }
+
+      {
+        !order.quote && order.status === "CONFIRMED" && (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-4">
+            <p className="text-zinc-500 text-sm">⏳ Очікуємо калькуляцію від майстра...</p>
+          </div>
+        )
+      }
 
       {/* Подтверждение выполнения */}
-      {order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
-        <div className="space-y-3 mb-4">
-          <ConfirmOrderButton orderId={order.id} />
-        </div>
-      )}
+      {
+        order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
+          <div className="space-y-3 mb-4">
+            <ConfirmOrderButton orderId={order.id} />
+          </div>
+        )
+      }
 
       {/* Отзыв */}
-      {order.status === "DONE" && order.paymentStatus === "RELEASED" && !order.review && (
-        <Link
-          href={`/orders/${order.id}/review`}
-          className="block w-full text-center bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors mb-4"
-        >
-          Залишити відгук
-        </Link>
-      )}
+      {
+        order.status === "DONE" && order.paymentStatus === "RELEASED" && !order.review && (
+          <Link
+            href={`/orders/${order.id}/review`}
+            className="block w-full text-center bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors mb-4"
+          >
+            Залишити відгук
+          </Link>
+        )
+      }
 
       {/* Жалоба */}
-      {order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
-        <ComplaintForm orderId={order.id} />
-      )}
+      {
+        order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
+          <ComplaintForm orderId={order.id} />
+        )
+      }
 
-      {order.complaint && (
-        <p className="text-zinc-600 text-sm text-center mt-4">
-          Скаргу подано {new Date(order.complaint.createdAt).toLocaleDateString("uk-UA")}
-        </p>
-      )}
-    </div>
+      {
+        order.complaint && (
+          <p className="text-zinc-600 text-sm text-center mt-4">
+            Скаргу подано {new Date(order.complaint.createdAt).toLocaleDateString("uk-UA")}
+          </p>
+        )
+      }
+    </div >
   );
 }

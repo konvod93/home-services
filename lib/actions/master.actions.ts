@@ -41,6 +41,7 @@ export async function updateMasterSettings(formData: FormData) {
 
   const masterId = formData.get("masterId") as string;
   const bio = formData.get("bio") as string;
+  const phone = formData.get("phone") as string;
   const region = formData.get("region") as string;
   const city = formData.get("city") as string;
   const district = formData.get("district") as string;
@@ -49,6 +50,7 @@ export async function updateMasterSettings(formData: FormData) {
     where: { id: masterId },
     data: {
       bio: bio || null,
+      phone,
       region: region || null,
       city: city || null,
       district: district || null,
