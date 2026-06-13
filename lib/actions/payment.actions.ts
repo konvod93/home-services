@@ -89,6 +89,12 @@ export async function cancelOrderByMaster(orderId: string, reason: string) {
   if (!session?.user?.id) return { error: "Необходима авторизация" };
   if (session.user.role !== "MASTER") return { error: "Нет доступа" };
 
+  const master = await db.master.findUnique({
+    where: { userId: session.user.id },
+  });
+
+  if (!master) return { error: "Майстра не знайдено" };
+
   const order = await db.order.findUnique({
     where: { id: orderId },
     include: { client: { select: { name: true, email: true } } },
@@ -96,7 +102,6 @@ export async function cancelOrderByMaster(orderId: string, reason: string) {
 
   if (!order) return { error: "Замовлення не знайдено" };
 
-  // Создаём жалобу от имени системы
   await db.order.update({
     where: { id: orderId },
     data: {
@@ -105,7 +110,23 @@ export async function cancelOrderByMaster(orderId: string, reason: string) {
     },
   });
 
-  // Уведомляем админа
+  // Сохраняем причину как жалобу от мастера
+  const existingComplaint = await db.complaint.findUnique({
+    where: { orderId },
+  });
+
+  if (!existingComplaint) {
+    await db.complaint.create({
+      data: {
+        orderId,
+        clientId: order.clientId,
+        masterId: master.id,
+        reason: `⚠️ Форс-мажор від майстра: ${reason}`,
+        photos: [],
+      },
+    });
+  }
+
   const admin = await db.user.findFirst({
     where: { role: "ADMIN" },
     select: { email: true },
