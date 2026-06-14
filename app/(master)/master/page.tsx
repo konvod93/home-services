@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import OrderStatusForm from "./OrderStatusForm";
 import Link from "next/link";
 import MasterForceCancel from "./MasterForceCancel";
+import NoPhoneModal from "@/components/shared/NoPhoneModal";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Ожидает",
@@ -31,6 +32,10 @@ export default async function MasterPage() {
   });
 
   if (!master) redirect("/dashboard");
+
+  if (!master.phone) {
+    return <NoPhoneModal />;
+  }
 
   const orders = await db.order.findMany({
     where: { masterId: master.id },
