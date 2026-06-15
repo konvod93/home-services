@@ -49,8 +49,8 @@ export default async function AdminOrdersPage() {
     pending: orders.filter((o) => o.status === "PENDING").length,
     done: orders.filter((o) => o.status === "DONE").length,
     revenue: orders
-      .filter((o) => o.status === "DONE")
-      .reduce((sum, o) => sum + Number(o.totalPrice), 0),
+      .filter((o) => o.paymentStatus === "RELEASED")
+      .reduce((sum, o) => sum + Number(o.totalPrice) * (o.commissionPct / 100), 0),
   };
 
   return (
@@ -75,8 +75,9 @@ export default async function AdminOrdersPage() {
           <p className="text-2xl font-bold text-green-400">{stats.done}</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-zinc-500 text-xs mb-1">Выручка</p>
-          <p className="text-2xl font-bold text-amber-400">{stats.revenue} ₴</p>
+          <p className="text-zinc-500 text-xs mb-1">Дохід платформи</p>
+          <p className="text-2xl font-bold text-amber-400">{stats.revenue.toFixed(2)} ₴</p>
+          <p className="text-zinc-600 text-xs mt-1">комісія з виконаних замовлень</p>
         </div>
       </div>
 
@@ -89,7 +90,7 @@ export default async function AdminOrdersPage() {
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Клиент</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Мастер</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дата</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Сумма</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Комісія</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Статус</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дії</th>
             </tr>
@@ -116,7 +117,10 @@ export default async function AdminOrdersPage() {
                   </p>
                 </td>
                 <td className="px-6 py-4">
-                  <p className="text-amber-400 text-sm font-medium">{order.totalPrice} ₴</p>
+                  <p className="text-amber-400 text-sm font-medium">
+                    {(Number(order.totalPrice) * (order.commissionPct / 100)).toFixed(2)} ₴
+                  </p>
+                  <p className="text-zinc-600 text-xs">{order.totalPrice} ₴ всього</p>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1">
