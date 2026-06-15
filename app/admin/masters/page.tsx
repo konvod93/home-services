@@ -36,6 +36,9 @@ export default async function AdminMastersPage() {
                 <td className="px-6 py-4">
                   <p className="text-white text-sm font-medium">{master.user.name}</p>
                   <p className="text-zinc-500 text-xs">{master.user.email}</p>
+                  {master.phone && (
+                    <p className="text-zinc-500 text-xs">{master.phone}</p>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-amber-400 text-sm">
