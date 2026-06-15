@@ -82,9 +82,6 @@ export default async function MasterPage() {
                     <div>
                       <p className="text-white font-medium">{order.items[0]?.service.name}</p>
                       <p className="text-zinc-500 text-sm mt-0.5">Клиент: {order.client.name}</p>
-                      {order.client.phone && (
-                        <p className="text-zinc-500 text-sm">{order.client.phone}</p>
-                      )}
                     </div>
                     <span className="text-amber-400 font-bold">{order.totalPrice} ₴</span>
                   </div>
@@ -111,6 +108,14 @@ export default async function MasterPage() {
                     <div>
                       <p className="text-white font-medium">{order.items[0]?.service.name}</p>
                       <p className="text-zinc-500 text-sm">{order.client.name}</p>
+                      {order.paymentStatus === "HELD" && order.client.phone && (
+                        <a
+                          href={`tel:${order.client.phone}`}
+                          className="text-amber-400 text-sm hover:text-amber-300 transition-colors"
+                        >
+                          {order.client.phone}
+                        </a>
+                      )}
                     </div>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[order.status]}`}>
                       {statusLabels[order.status]}
