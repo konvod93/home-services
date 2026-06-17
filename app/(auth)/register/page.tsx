@@ -12,7 +12,7 @@ export default function RegisterPage() {
 
   async function handleSubmit(formData: FormData) {
     if (!token) {
-      setError("Пройдите проверку капчи");
+      setError("Пройдіть перевірку капчі");
       return;
     }
     setLoading(true);
@@ -32,20 +32,20 @@ export default function RegisterPage() {
           <span className="text-3xl font-bold tracking-tight text-white">
             home<span className="text-amber-400">fix</span>
           </span>
-          <p className="text-zinc-500 text-sm mt-2">Сервис домашних мастеров</p>
+          <p className="text-zinc-500 text-sm mt-2">Сервіс домашніх майстрів</p>
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-          <h1 className="text-xl font-semibold text-white mb-6">Создать аккаунт</h1>
+          <h1 className="text-xl font-semibold text-white mb-6">Створити акаунт</h1>
 
           <form action={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1.5">Имя</label>
+              <label className="block text-sm text-zinc-400 mb-1.5">Ім’я</label>
               <input
                 name="name"
                 type="text"
                 required
-                placeholder="Иван Иванов"
+                placeholder="Іван Іванов"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
               />
             </div>
@@ -70,38 +70,38 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
               />
-              <div>
-                <label className="block text-sm text-zinc-400 mb-1.5">Область</label>
-                <input
-                  name="region"
-                  type="text"
-                  placeholder="Харківська"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-zinc-400 mb-1.5">Місто / Населений пункт</label>
-                <input
-                  name="city"
-                  type="text"
-                  placeholder="Харків"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов`язково)</span></label>
-                <input
-                  name="district"
-                  type="text"
-                  placeholder="Олексіївка"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
-                />
-              </div>
             </div>
 
-            {/* Согласия */}
+            <div>
+              <label className="block text-sm text-zinc-400 mb-1.5">Область</label>
+              <input
+                name="region"
+                type="text"
+                placeholder="Харківська"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-zinc-400 mb-1.5">Місто / Населений пункт</label>
+              <input
+                name="city"
+                type="text"
+                placeholder="Харків"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов’язково)</span></label>
+              <input
+                name="district"
+                type="text"
+                placeholder="Олексіївка"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+            </div>
+
             <div className="space-y-3">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -110,9 +110,9 @@ export default function RegisterPage() {
                   className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-400"
                 />
                 <span className="text-sm text-zinc-400">
-                  Я согласен на{" "}
+                  Я погоджуюсь на{" "}
                   <a href="/privacy" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
-                    обработку персональных данных
+                    обробку персональних даних
                   </a>
                 </span>
               </label>
@@ -124,15 +124,14 @@ export default function RegisterPage() {
                   className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-400"
                 />
                 <span className="text-sm text-zinc-400">
-                  Я ознакомлен с{" "}
+                  Я ознайомлений з{" "}
                   <a href="/terms" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
-                    правилами сервиса
+                    правилами сервісу
                   </a>
                 </span>
               </label>
             </div>
 
-            {/* Капча */}
             <TurnstileWidget onSuccess={setToken} />
 
             {error && <p className="text-red-400 text-sm">{error}</p>}
@@ -142,14 +141,14 @@ export default function RegisterPage() {
               disabled={loading || !token}
               className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {loading ? "Регистрируем..." : "Зарегистрироваться"}
+              {loading ? "Реєструємо..." : "Зареєструватися"}
             </button>
           </form>
 
           <p className="text-zinc-500 text-sm text-center mt-6">
-            Уже есть аккаунт?{" "}
+            Вже є акаунт?{" "}
             <Link href="/login" className="text-amber-400 hover:text-amber-300 transition-colors">
-              Войти
+              Увійти
             </Link>
           </p>
         </div>

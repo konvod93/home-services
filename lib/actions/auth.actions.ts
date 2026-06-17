@@ -28,17 +28,17 @@ export async function register(formData: FormData) {
   const district = formData.get("district") as string;
 
   if (!name || !email || !password) {
-    return { error: "Заполните все поля" };
+    return { error: "Заповніть усі поля" };
   }
 
   const valid = await verifyTurnstile(turnstileToken);
   if (!valid) {
-    return { error: "Проверка капчи не пройдена" };
+    return { error: "Перевірка капчі не пройдена" };
   }
 
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) {
-    return { error: "Пользователь с таким email уже существует" };
+    return { error: "Користувач із таким email вже існує" };
   }
 
   const hashed = await bcrypt.hash(password, 12);
@@ -65,7 +65,7 @@ export async function login(formData: FormData) {
     await signIn("credentials", { email, password, redirectTo: "/dashboard" });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Неверный email или пароль" };
+      return { error: "Неправильний email або пароль" };
     }
     throw error;
   }
