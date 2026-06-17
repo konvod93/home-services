@@ -9,8 +9,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Home Services",
-  description: "Сервис вызова мастеров на дом",
+  title: "Homefix — Сервіс домашніх майстрів",
+  description: "Майстер на дім: сантехніка, електрика, ремонт",
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="uk">
       <body className={`${geist.variable} antialiased min-h-screen flex flex-col`}>
         <DemoModal />
         {children}
