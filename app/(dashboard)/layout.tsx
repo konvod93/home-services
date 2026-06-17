@@ -24,23 +24,22 @@ export default async function DashboardLayout({
             </span>
           </Link>
 
-          {/* Desktop */}
           <div className="hidden md:flex items-center gap-6">
             <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-white transition-colors">
-              Главная
+              Головна
             </Link>
             <Link href="/orders" className="text-sm text-zinc-400 hover:text-white transition-colors">
-              Мои заказы
+              Мої замовлення
             </Link>
             <Link href="/services" className="text-sm text-zinc-400 hover:text-white transition-colors">
-              Услуги
+              Послуги
             </Link>
             <Link href="/profile" className="text-sm text-zinc-400 hover:text-white transition-colors">
-              Профиль
+              Профіль
             </Link>
             {isMaster && (
               <Link href="/master" className="text-sm bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 px-3 py-1.5 rounded-lg transition-colors">
-                Кабинет мастера
+                Кабінет майстра
               </Link>
             )}
             <form action={async () => {
@@ -48,12 +47,11 @@ export default async function DashboardLayout({
               await signOut({ redirectTo: "/login" });
             }}>
               <button type="submit" className="text-sm text-zinc-500 hover:text-red-400 transition-colors">
-                Выйти
+                Вийти
               </button>
             </form>
           </div>
 
-          {/* Mobile */}
           <MobileMenu isMaster={isMaster} />
         </div>
       </nav>

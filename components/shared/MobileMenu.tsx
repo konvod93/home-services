@@ -12,15 +12,14 @@ export default function MobileMenu({ isMaster }: Props) {
   const [open, setOpen] = useState(false);
 
   const links = [
-    { href: "/dashboard", label: "Главная" },
-    { href: "/orders", label: "Мои заказы" },
-    { href: "/services", label: "Услуги" },
-    { href: "/profile", label: "Профиль" },
+    { href: "/dashboard", label: "Головна" },
+    { href: "/orders", label: "Мої замовлення" },
+    { href: "/services", label: "Послуги" },
+    { href: "/profile", label: "Профіль" },
   ];
 
   return (
     <div className="md:hidden">
-      {/* Бутерброд */}
       <button
         onClick={() => setOpen(!open)}
         className="text-zinc-400 hover:text-white transition-colors p-2"
@@ -36,7 +35,6 @@ export default function MobileMenu({ isMaster }: Props) {
         )}
       </button>
 
-      {/* Дропдаун */}
       {open && (
         <div className="absolute top-14 left-0 right-0 bg-zinc-900 border-b border-zinc-800 z-50 px-4 py-4 space-y-1">
           {links.map((link) => (
@@ -56,7 +54,7 @@ export default function MobileMenu({ isMaster }: Props) {
               onClick={() => setOpen(false)}
               className="block text-sm text-amber-400 px-3 py-2.5 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 transition-colors"
             >
-              Кабинет мастера
+              Кабінет майстра
             </Link>
           )}
 
@@ -64,7 +62,7 @@ export default function MobileMenu({ isMaster }: Props) {
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="block w-full text-left text-sm text-zinc-500 hover:text-red-400 px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors"
           >
-            Выйти
+            Вийти
           </button>
         </div>
       )}

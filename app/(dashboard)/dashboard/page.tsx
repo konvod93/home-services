@@ -9,61 +9,60 @@ export default async function DashboardPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">
-          Добро пожаловать, {session?.user?.name} 👋
+          Вітаємо, {session?.user?.name} 👋
         </h1>
-        <p className="text-zinc-500 mt-1">Что нужно сделать сегодня?</p>
+        <p className="text-zinc-500 mt-1">Що потрібно зробити сьогодні?</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <Link href="/services" className="group bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 rounded-2xl p-6 transition-all">
           <div className="text-2xl mb-3">🔧</div>
-          <h2 className="text-white font-semibold mb-1">Вызвать мастера</h2>
-          <p className="text-zinc-500 text-sm">Сантехника, электрика, ремонт и другие услуги</p>
+          <h2 className="text-white font-semibold mb-1">Викликати майстра</h2>
+          <p className="text-zinc-500 text-sm">Сантехніка, електрика, ремонт та інші послуги</p>
         </Link>
 
         <Link href="/orders" className="group bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 rounded-2xl p-6 transition-all">
           <div className="text-2xl mb-3">📋</div>
-          <h2 className="text-white font-semibold mb-1">Мои заказы</h2>
-          <p className="text-zinc-500 text-sm">История и статус текущих заказов</p>
+          <h2 className="text-white font-semibold mb-1">Мої замовлення</h2>
+          <p className="text-zinc-500 text-sm">Історія та статус поточних замовлень</p>
         </Link>
 
         <Link href="/profile" className="group bg-zinc-900 border border-zinc-800 hover:border-amber-400/50 rounded-2xl p-6 transition-all">
           <div className="text-2xl mb-3">👤</div>
-          <h2 className="text-white font-semibold mb-1">Профиль</h2>
-          <p className="text-zinc-500 text-sm">Личные данные и настройки</p>
+          <h2 className="text-white font-semibold mb-1">Профіль</h2>
+          <p className="text-zinc-500 text-sm">Особисті дані та налаштування</p>
         </Link>
 
         {session?.user?.role === "CLIENT" && (
           <MasterApplicationButton />
         )}
+
+        {session?.user?.role === "ADMIN" && (
+          <Link
+            href="/admin"
+            className="block bg-zinc-900 border border-red-400/20 hover:border-red-400/50 rounded-2xl p-6 transition-all"
+          >
+            <div className="text-2xl mb-3">⚙️</div>
+            <h2 className="text-white font-semibold mb-1">Адмінпанель</h2>
+            <p className="text-zinc-500 text-sm">Керування користувачами, замовленнями та послугами</p>
+          </Link>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-zinc-500 text-sm mb-1">Всего заказов</p>
+          <p className="text-zinc-500 text-sm mb-1">Усього замовлень</p>
           <p className="text-3xl font-bold text-white">0</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-zinc-500 text-sm mb-1">Активных</p>
+          <p className="text-zinc-500 text-sm mb-1">Активних</p>
           <p className="text-3xl font-bold text-amber-400">0</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-zinc-500 text-sm mb-1">Завершённых</p>
+          <p className="text-zinc-500 text-sm mb-1">Завершених</p>
           <p className="text-3xl font-bold text-green-400">0</p>
         </div>
       </div>
-
-      {session?.user?.role === "ADMIN" && (
-        <Link
-          href="/admin"
-          className="block bg-zinc-900 border border-red-400/20 hover:border-red-400/50 rounded-2xl p-6 transition-all mt-4"
-        >
-          <div className="text-2xl mb-3">⚙️</div>
-          <h2 className="text-white font-semibold mb-1">Админпанель</h2>
-          <p className="text-zinc-500 text-sm">Управление пользователями, заказами и услугами</p>
-        </Link>
-      )}
-
     </div>
   );
 }
