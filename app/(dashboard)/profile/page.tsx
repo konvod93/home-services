@@ -31,8 +31,8 @@ export default async function ProfilePage() {
             </p>
           )}
           <p className="text-zinc-600 text-xs mt-1">
-            Аккаунт з{" "}
-            {new Date(user.createdAt).toLocaleDateString("ru-RU", {
+            Акаунт з{" "}
+            {new Date(user.createdAt).toLocaleDateString("uk-UA", {
               month: "long",
               year: "numeric",
             })}

@@ -76,7 +76,7 @@ export default function ProfileForm({ name, phone, region, city, district }: Pro
       </div>
 
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов`язково)</span></label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов’язково)</span></label>
         <input
           name="district"
           type="text"
