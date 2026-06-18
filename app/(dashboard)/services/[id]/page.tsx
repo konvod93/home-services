@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 const categoryLabels: Record<string, string> = {
-  PLUMBING: "Сантехника",
+  PLUMBING: "Сантехніка",
   ELECTRICAL: "Електрика",
   RENOVATION: "Ремонт",
   CLEANING: "Прибирання",
@@ -37,9 +37,9 @@ export default async function ServicePage({
 
   const user = session?.user?.id
     ? await db.user.findUnique({
-      where: { id: session.user.id },
-      select: { city: true, district: true, region: true },
-    })
+        where: { id: session.user.id },
+        select: { city: true, district: true, region: true },
+      })
     : null;
 
   const filterCity = cityFilter || user?.city || "";
@@ -73,18 +73,15 @@ export default async function ServicePage({
 
   if (!service) notFound();
 
-  // Сортируем мастеров по релевантности локации
   const sortedMasters = [...service.masters].sort((a, b) => {
     const scoreA = getLocationScore(a.master, user);
     const scoreB = getLocationScore(b.master, user);
     if (scoreB !== scoreA) return scoreB - scoreA;
-    // При равном score — сначала те у кого есть слоты
     const hasSlotA = a.master.slots.length > 0 ? 1 : 0;
     const hasSlotB = b.master.slots.length > 0 ? 1 : 0;
     return hasSlotB - hasSlotA;
   });
 
-  // Если фильтр по городу не дал результатов — показываем всех
   const showAllMasters = sortedMasters.length === 0 && filterCity;
 
   const allMasters = showAllMasters ? await db.masterService.findMany({
@@ -124,9 +121,12 @@ export default async function ServicePage({
           <p className="text-zinc-400 mb-4">{service.description}</p>
         )}
         <div className="flex items-center gap-2">
-          <span className="text-3xl font-bold text-white">від {service.basePrice} ₴</span>
-          <span className="text-zinc-500 text-sm">{service.unit}</span>
+          <span className="text-3xl font-bold text-white">{service.basePrice} ₴</span>
+          <span className="text-zinc-500 text-sm">середня ринкова ціна, {service.unit}</span>
         </div>
+        <p className="text-zinc-600 text-xs mt-2">
+          Майстер встановлює власну ціну при складанні калькуляції
+        </p>
       </div>
 
       <div className="flex items-center justify-between mb-4">
@@ -206,11 +206,11 @@ export default async function ServicePage({
                           href={`/order/new?serviceId=${service.id}&masterId=${master.id}&slotId=${slot.id}`}
                           className="text-xs bg-zinc-800 hover:bg-amber-400 hover:text-zinc-900 text-zinc-300 px-3 py-1.5 rounded-lg transition-colors"
                         >
-                          {new Date(slot.date).toLocaleDateString("ru-RU", {
+                          {new Date(slot.date).toLocaleDateString("uk-UA", {
                             day: "numeric",
                             month: "short",
                           })}{" "}
-                          {new Date(slot.timeStart).toLocaleTimeString("ru-RU", {
+                          {new Date(slot.timeStart).toLocaleTimeString("uk-UA", {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
