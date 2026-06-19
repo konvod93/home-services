@@ -32,22 +32,22 @@ export default function OrderForm({ serviceId, masterId, slotId, price }: OrderF
   return (
     <form action={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Адрес</label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Адреса</label>
         <input
           name="address"
           type="text"
           required
-          placeholder="ул. Примерная, д. 1, кв. 10"
+          placeholder="вул. Прикладна, буд. 1, кв. 10"
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
         />
       </div>
 
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Комментарий</label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Коментар</label>
         <textarea
           name="comment"
           rows={3}
-          placeholder="Опишите проблему подробнее..."
+          placeholder="Опишіть проблему детальніше..."
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors resize-none"
         />
       </div>
@@ -59,7 +59,7 @@ export default function OrderForm({ serviceId, masterId, slotId, price }: OrderF
         disabled={loading}
         className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Оформляем..." : "Подтвердить заказ"}
+        {loading ? "Оформлюємо..." : "Підтвердити замовлення"}
       </button>
     </form>
   );

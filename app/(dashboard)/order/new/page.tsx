@@ -34,38 +34,39 @@ export default async function NewOrderPage({
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-white mb-6">Оформление заказа</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Оформлення замовлення</h1>
 
-      {/* Сводка */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6 space-y-3">
         <div className="flex justify-between text-sm">
-          <span className="text-zinc-500">Услуга</span>
+          <span className="text-zinc-500">Послуга</span>
           <span className="text-white font-medium">{service.name}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-zinc-500">Мастер</span>
+          <span className="text-zinc-500">Майстер</span>
           <span className="text-white font-medium">{master.user.name}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-zinc-500">Дата и время</span>
+          <span className="text-zinc-500">Дата та час</span>
           <span className="text-white font-medium">
-            {new Date(slot.date).toLocaleDateString("ru-RU", {
+            {new Date(slot.date).toLocaleDateString("uk-UA", {
               day: "numeric",
               month: "long",
             })}{" "}
-            {new Date(slot.timeStart).toLocaleTimeString("ru-RU", {
+            {new Date(slot.timeStart).toLocaleTimeString("uk-UA", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </span>
         </div>
         <div className="border-t border-zinc-800 pt-3 flex justify-between">
-          <span className="text-zinc-500">Итого</span>
+          <span className="text-zinc-500">Орієнтовна вартість</span>
           <span className="text-amber-400 font-bold text-lg">{price} ₴</span>
         </div>
+        <p className="text-zinc-600 text-xs">
+          Точна сума буде визначена майстром після калькуляції на місці
+        </p>
       </div>
 
-      {/* Форма */}
       <OrderForm
         serviceId={serviceId}
         masterId={masterId}

@@ -16,10 +16,10 @@ export async function createOrder(formData: FormData) {
   const comment = formData.get("comment") as string;
   const price = parseFloat(formData.get("price") as string);
 
-  if (!address) return { error: "Укажите адрес" };
+  if (!address) return { error: "Вкажіть адресу" };
 
   const slot = await db.slot.findUnique({ where: { id: slotId } });
-  if (!slot || slot.isBusy) return { error: "Слот уже занят" };
+  if (!slot || slot.isBusy) return { error: "Слот вже зайнятий" };
 
   const [service, master, client] = await Promise.all([
     db.service.findUnique({ where: { id: serviceId } }),
@@ -60,24 +60,24 @@ export async function createOrder(formData: FormData) {
   }
 
   if (master) {
-  const masterUser = await db.user.findUnique({
-    where: { id: master.userId },
-    select: { email: true },
-  });
-
-  if (masterUser?.email && service && client) {
-    await sendNewOrderNotificationToMaster({
-      masterEmail: masterUser.email,
-      masterName: master.user.name,
-      clientName: client.name,
-      serviceName: service.name,
-      date: new Date(slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
-      time: new Date(slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-      address,
-      comment: comment || null,      
+    const masterUser = await db.user.findUnique({
+      where: { id: master.userId },
+      select: { email: true },
     });
+
+    if (masterUser?.email && service && client) {
+      await sendNewOrderNotificationToMaster({
+        masterEmail: masterUser.email,
+        masterName: master.user.name,
+        clientName: client.name,
+        serviceName: service.name,
+        date: new Date(slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
+        time: new Date(slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+        address,
+        comment: comment || null,
+      });
+    }
   }
-}
 
   redirect(`/orders/${order.id}`);
 }
