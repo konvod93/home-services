@@ -22,14 +22,14 @@ export default async function BecomeMasterPage() {
              existing.application.status === "APPROVED" ? "✅" : "❌"}
           </div>
           <h1 className="text-xl font-bold text-white mb-2">
-            {existing.application.status === "PENDING" && "Заявка на рассмотрении"}
-            {existing.application.status === "APPROVED" && "Заявка одобрена"}
-            {existing.application.status === "REJECTED" && "Заявка отклонена"}
+            {existing.application.status === "PENDING" && "Заявку на розгляді"}
+            {existing.application.status === "APPROVED" && "Заявку схвалено"}
+            {existing.application.status === "REJECTED" && "Заявку відхилено"}
           </h1>
           <p className="text-zinc-500 text-sm">
-            {existing.application.status === "PENDING" && "Мы проверяем ваши документы. Обычно это занимает 1-2 дня."}
-            {existing.application.status === "APPROVED" && "Поздравляем! Вы можете принимать заказы."}
-            {existing.application.status === "REJECTED" && (existing.application.comment || "Ваша заявка была отклонена.")}
+            {existing.application.status === "PENDING" && "Ми перевіряємо ваші документи. Зазвичай це займає 1-2 дні."}
+            {existing.application.status === "APPROVED" && "Вітаємо! Ви можете приймати замовлення."}
+            {existing.application.status === "REJECTED" && (existing.application.comment || "Вашу заявку було відхилено.")}
           </p>
         </div>
       </div>
@@ -44,9 +44,9 @@ export default async function BecomeMasterPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-white mb-2">Стать мастером</h1>
+      <h1 className="text-2xl font-bold text-white mb-2">Стати майстром</h1>
       <p className="text-zinc-500 mb-8">
-        Заполните анкету и загрузите документы. Мы проверим их и свяжемся с вами.
+        Заповніть анкету та завантажте документи. Ми перевіримо їх та зв’яжемося з вами.
       </p>
       <BecomeMasterForm services={services} />
     </div>

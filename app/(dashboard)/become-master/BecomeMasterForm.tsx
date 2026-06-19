@@ -5,12 +5,12 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { submitMasterApplication } from "@/lib/actions/master-application.actions";
 
 const categoryList = [
-  { value: "PLUMBING", label: "🚿 Сантехника" },
-  { value: "ELECTRICAL", label: "⚡ Электрика" },
+  { value: "PLUMBING", label: "🚿 Сантехніка" },
+  { value: "ELECTRICAL", label: "⚡ Електрика" },
   { value: "RENOVATION", label: "🏠 Ремонт" },
-  { value: "CLEANING", label: "🧹 Уборка" },
-  { value: "FURNITURE", label: "🪑 Мебель" },
-  { value: "OTHER", label: "🔧 Другое" },
+  { value: "CLEANING", label: "🧹 Прибирання" },
+  { value: "FURNITURE", label: "🪑 Меблі" },
+  { value: "OTHER", label: "🔧 Інше" },
 ];
 
 interface Service {
@@ -39,7 +39,6 @@ export default function BecomeMasterForm({ services }: Props) {
     setSelectedCategories((prev) =>
       prev.includes(value) ? prev.filter((c) => c !== value) : [...prev, value]
     );
-    // убираем услуги этой категории если категория снята
     if (selectedCategories.includes(value)) {
       const categoryServices = services.filter((s) => s.category === value).map((s) => s.id);
       setSelectedServices((prev) => prev.filter((id) => !categoryServices.includes(id)));
@@ -59,26 +58,26 @@ export default function BecomeMasterForm({ services }: Props) {
     setError(null);
 
     if (selectedCategories.length === 0) {
-      setError("Выберите хотя бы одну категорию");
+      setError("Оберіть хоча б одну категорію");
       setLoading(false);
       return;
     }
 
     if (selectedServices.length === 0) {
-      setError("Выберите хотя бы одну услугу");
+      setError("Оберіть хоча б одну послугу");
       setLoading(false);
       return;
     }
 
     if (!idPhotoFile) {
-      setError("Загрузите фото с паспортом");
+      setError("Завантажте фото з паспортом");
       setLoading(false);
       return;
     }
 
     const uploadedId = await uploadIdPhoto([idPhotoFile]);
     if (!uploadedId) {
-      setError("Ошибка загрузки фото");
+      setError("Помилка завантаження фото");
       setLoading(false);
       return;
     }
@@ -87,7 +86,7 @@ export default function BecomeMasterForm({ services }: Props) {
     if (files.length > 0) {
       const uploaded = await uploadDocs(files);
       if (!uploaded) {
-        setError("Ошибка загрузки документов");
+        setError("Помилка завантаження документів");
         setLoading(false);
         return;
       }
@@ -108,21 +107,21 @@ export default function BecomeMasterForm({ services }: Props) {
 
   return (
     <form action={handleSubmit} className="space-y-5">
-      {/* Основная информация */}
+      {/* Основна інформація */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">О себе</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">Про себе</label>
           <textarea
             name="bio"
             rows={3}
             required
-            placeholder="Расскажите о своём опыте и специализации..."
+            placeholder="Розкажіть про свій досвід та спеціалізацію..."
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors resize-none"
           />
         </div>
 
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Опыт работы (лет)</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">Досвід роботи (років)</label>
           <input
             name="experience"
             type="number"
@@ -133,6 +132,7 @@ export default function BecomeMasterForm({ services }: Props) {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
+
         <div>
           <label className="block text-sm text-zinc-400 mb-1.5">Область</label>
           <input
@@ -156,7 +156,9 @@ export default function BecomeMasterForm({ services }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Район міста <span className="text-zinc-600">(необов`язково)</span></label>
+          <label className="block text-sm text-zinc-400 mb-1.5">
+            Район міста <span className="text-zinc-600">(необов’язково)</span>
+          </label>
           <input
             name="district"
             type="text"
@@ -166,22 +168,23 @@ export default function BecomeMasterForm({ services }: Props) {
         </div>
       </div>
 
-      {/* Шаг 1 — Категории */}
+      {/* Крок 1 — Категорії */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
         <label className="block text-sm font-medium text-white mb-1">
-          Шаг 1: Выберите категории <span className="text-red-400">*</span>
+          Крок 1: Оберіть категорії <span className="text-red-400">*</span>
         </label>
-        <p className="text-zinc-500 text-xs mb-3">Отметьте направления в которых вы работаете</p>
+        <p className="text-zinc-500 text-xs mb-3">Відмітьте напрямки в яких ви працюєте</p>
         <div className="grid grid-cols-2 gap-2">
           {categoryList.map((cat) => (
             <button
               key={cat.value}
               type="button"
               onClick={() => toggleCategory(cat.value)}
-              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${selectedCategories.includes(cat.value)
-                ? "bg-amber-400/10 border-amber-400 text-amber-400"
-                : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
-                }`}
+              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${
+                selectedCategories.includes(cat.value)
+                  ? "bg-amber-400/10 border-amber-400 text-amber-400"
+                  : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+              }`}
             >
               {cat.label}
             </button>
@@ -189,23 +192,24 @@ export default function BecomeMasterForm({ services }: Props) {
         </div>
       </div>
 
-      {/* Шаг 2 — Конкретные услуги */}
+      {/* Крок 2 — Послуги */}
       {filteredServices.length > 0 && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <label className="block text-sm font-medium text-white mb-1">
-            Шаг 2: Выберите услуги <span className="text-red-400">*</span>
+            Крок 2: Оберіть послуги <span className="text-red-400">*</span>
           </label>
-          <p className="text-zinc-500 text-xs mb-3">Отметьте только те работы которые вы умеете делать</p>
+          <p className="text-zinc-500 text-xs mb-3">Відмітьте лише ті роботи які ви вмієте виконувати</p>
           <div className="space-y-1">
             {filteredServices.map((service) => (
               <button
                 key={service.id}
                 type="button"
                 onClick={() => toggleService(service.id)}
-                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${selectedServices.includes(service.id)
-                  ? "bg-amber-400/10 border-amber-400 text-white"
-                  : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
-                  }`}
+                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${
+                  selectedServices.includes(service.id)
+                    ? "bg-amber-400/10 border-amber-400 text-white"
+                    : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                }`}
               >
                 <span>{service.name}</span>
                 <span className="text-zinc-600 text-xs">{service.unit}</span>
@@ -215,13 +219,13 @@ export default function BecomeMasterForm({ services }: Props) {
         </div>
       )}
 
-      {/* Фото с паспортом */}
+      {/* Фото з паспортом */}
       <div className="bg-zinc-900 border border-amber-400/20 rounded-2xl p-6">
         <label className="block text-sm font-medium text-white mb-1">
-          Фото с паспортом <span className="text-red-400">*</span>
+          Фото з паспортом <span className="text-red-400">*</span>
         </label>
         <p className="text-zinc-500 text-xs mb-3">
-          Сфотографируйтесь рядом с развёрнутым паспортом. Лицо и данные паспорта должны быть чётко видны.
+          Сфотографуйтеся поряд з розгорнутим паспортом. Обличчя та дані паспорта мають бути чітко видні. Фото використовується лише для верифікації.
         </p>
         <input
           type="file"
@@ -234,12 +238,15 @@ export default function BecomeMasterForm({ services }: Props) {
         )}
       </div>
 
-      {/* Документы */}
+      {/* Документи */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
         <label className="block text-sm font-medium text-white mb-1">
-          Дипломы и сертификаты
-          <span className="text-zinc-500 font-normal ml-1">(необязательно)</span>
+          Дипломи та сертифікати
+          <span className="text-zinc-500 font-normal ml-1">(необов’язково)</span>
         </label>
+        <p className="text-zinc-500 text-xs mb-3">
+          PDF або фото дипломів, сертифікатів, рекомендаційних листів. До 5 файлів.
+        </p>
         <input
           type="file"
           multiple
@@ -248,26 +255,24 @@ export default function BecomeMasterForm({ services }: Props) {
           className="w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-zinc-700 file:text-zinc-300 file:font-medium hover:file:bg-zinc-600 transition-colors"
         />
         {files.length > 0 && (
-          <p className="text-zinc-500 text-xs mt-2">Выбрано файлов: {files.length}</p>
+          <p className="text-zinc-500 text-xs mt-2">Вибрано файлів: {files.length}</p>
         )}
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-
-      {/* Согласия */}
+      {/* Згоди */}
       <div className="space-y-3">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
             required
-            className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-400 focus:ring-amber-400 focus:ring-offset-zinc-900"
+            className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-400"
           />
           <span className="text-sm text-zinc-400">
-            Я согласен с{" "}
+            Я погоджуюся з{" "}
             <a href="/terms" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
-              правилами сервиса
+              правилами сервісу
             </a>{" "}
-            и обязуюсь выполнять работы качественно и в срок
+            та зобов’язуюся виконувати роботи якісно та вчасно
           </span>
         </label>
 
@@ -275,24 +280,26 @@ export default function BecomeMasterForm({ services }: Props) {
           <input
             type="checkbox"
             required
-            className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-400 focus:ring-amber-400 focus:ring-offset-zinc-900"
+            className="mt-0.5 w-4 h-4 rounded border-zinc-600 bg-zinc-800 accent-amber-400"
           />
           <span className="text-sm text-zinc-400">
-            Я согласен на{" "}
+            Я погоджуюся на{" "}
             <a href="/privacy" target="_blank" className="text-amber-400 hover:text-amber-300 transition-colors">
-              обработку персональных данных
+              обробку персональних даних
             </a>
-            , включая предоставленные документы и фото
+            , включаючи надані документи та фото
           </span>
         </label>
       </div>
+
+      {error && <p className="text-red-400 text-sm">{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
         className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Отправляем заявку..." : "Подать заявку"}
+        {loading ? "Надсилаємо заявку..." : "Подати заявку"}
       </button>
     </form>
   );

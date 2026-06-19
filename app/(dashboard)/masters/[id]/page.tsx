@@ -4,12 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 const categoryLabels: Record<string, string> = {
-  PLUMBING: "Сантехника",
-  ELECTRICAL: "Электрика",
+  PLUMBING: "Сантехніка",
+  ELECTRICAL: "Електрика",
   RENOVATION: "Ремонт",
-  CLEANING: "Уборка",
-  FURNITURE: "Мебель",
-  OTHER: "Другое",
+  CLEANING: "Прибирання",
+  FURNITURE: "Меблі",
+  OTHER: "Інше",
 };
 
 export default async function MasterProfilePage({
@@ -23,9 +23,7 @@ export default async function MasterProfilePage({
     where: { id },
     include: {
       user: { select: { name: true } },
-      services: {
-        include: { service: true },
-      },
+      services: { include: { service: true } },
       orders: {
         where: { status: "DONE" },
         include: {
@@ -52,10 +50,10 @@ export default async function MasterProfilePage({
         href="/services"
         className="text-zinc-500 hover:text-white text-sm transition-colors mb-6 inline-flex items-center gap-1"
       >
-        ← К услугам
+        ← До послуг
       </Link>
 
-      {/* Шапка профиля */}
+      {/* Шапка профілю */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-full bg-amber-400 flex items-center justify-center text-zinc-900 font-bold text-2xl shrink-0">
@@ -69,17 +67,16 @@ export default async function MasterProfilePage({
                   ★ {master.rating.toFixed(1)}
                 </span>
               ) : (
-                <span className="text-zinc-500 text-sm">Новый мастер</span>
+                <span className="text-zinc-500 text-sm">Новий майстер</span>
               )}
               {master.reviewCount > 0 && (
-                <span className="text-zinc-500 text-sm">{master.reviewCount} отзывов</span>
+                <span className="text-zinc-500 text-sm">{master.reviewCount} відгуків</span>
               )}
               <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded-full">
-                ✓ Верифицирован
+                ✓ Верифіковано
               </span>
             </div>
 
-            {/* Категории */}
             <div className="flex flex-wrap gap-1 mt-2">
               {categories.map((cat) => (
                 <span key={cat} className="text-xs text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-full">
@@ -95,11 +92,16 @@ export default async function MasterProfilePage({
             {master.bio}
           </p>
         )}
+        {master.city && (
+          <p className="text-zinc-600 text-xs mt-2">
+            📍 {[master.district, master.city, master.region].filter(Boolean).join(", ")}
+          </p>
+        )}
       </div>
 
-      {/* Услуги */}
+      {/* Послуги */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
-        <h2 className="text-white font-semibold mb-4">Услуги и цены</h2>
+        <h2 className="text-white font-semibold mb-4">Послуги та ціни</h2>
         <div className="space-y-2">
           {master.services.map(({ service, price }) => (
             <div key={service.id} className="flex items-center justify-between text-sm">
@@ -110,10 +112,10 @@ export default async function MasterProfilePage({
         </div>
       </div>
 
-      {/* Отзывы */}
+      {/* Відгуки */}
       <div>
         <h2 className="text-white font-semibold mb-4">
-          Отзывы
+          Відгуки
           {reviews.length > 0 && (
             <span className="text-zinc-500 font-normal text-sm ml-2">{reviews.length} шт.</span>
           )}
@@ -121,7 +123,7 @@ export default async function MasterProfilePage({
 
         {reviews.length === 0 ? (
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
-            <p className="text-zinc-500">Отзывов пока нет</p>
+            <p className="text-zinc-500">Відгуків поки немає</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -165,7 +167,7 @@ export default async function MasterProfilePage({
                 )}
 
                 <p className="text-zinc-600 text-xs mt-2">
-                  {new Date(review.createdAt).toLocaleDateString("ru-RU", {
+                  {new Date(review.createdAt).toLocaleDateString("uk-UA", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
