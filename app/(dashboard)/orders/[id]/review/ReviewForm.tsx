@@ -15,7 +15,7 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
 
   async function handleSubmit(formData: FormData) {
     if (rating === 0) {
-      setError("Выберите оценку");
+      setError("Оберіть оцінку");
       return;
     }
     setLoading(true);
@@ -25,7 +25,7 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
     if (files.length > 0) {
       const uploaded = await startUpload(files);
       if (!uploaded) {
-        setError("Ошибка загрузки фото");
+        setError("Помилка завантаження фото");
         setLoading(false);
         return;
       }
@@ -45,9 +45,8 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
 
   return (
     <form action={handleSubmit} className="space-y-5">
-      {/* Звёзды */}
       <div>
-        <label className="block text-sm text-zinc-400 mb-3">Оценка</label>
+        <label className="block text-sm text-zinc-400 mb-3">Оцінка</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -66,21 +65,19 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
         </div>
       </div>
 
-      {/* Комментарий */}
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Комментарий</label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Коментар</label>
         <textarea
           name="comment"
           rows={4}
-          placeholder="Расскажите о работе мастера..."
+          placeholder="Розкажіть про роботу майстра..."
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors resize-none"
         />
       </div>
 
-      {/* Фото */}
       <div>
         <label className="block text-sm text-zinc-400 mb-1.5">
-          Фото <span className="text-zinc-600">(необязательно, до 5 штук)</span>
+          Фото <span className="text-zinc-600">(необов’язково, до 5 штук)</span>
         </label>
         <input
           type="file"
@@ -90,7 +87,7 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
           className="w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-zinc-700 file:text-zinc-300 file:font-medium hover:file:bg-zinc-600 transition-colors"
         />
         {files.length > 0 && (
-          <p className="text-zinc-500 text-xs mt-1">Выбрано: {files.length}</p>
+          <p className="text-zinc-500 text-xs mt-1">Вибрано: {files.length}</p>
         )}
       </div>
 
@@ -101,7 +98,7 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
         disabled={loading || rating === 0}
         className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Отправляем..." : "Отправить отзыв"}
+        {loading ? "Надсилаємо..." : "Надіслати відгук"}
       </button>
     </form>
   );

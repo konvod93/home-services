@@ -4,11 +4,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 const statusLabels: Record<string, string> = {
-  PENDING: "Ожидает",
-  CONFIRMED: "Подтверждён",
-  IN_PROGRESS: "В работе",
-  DONE: "Завершён",
-  CANCELLED: "Отменён",
+  PENDING: "Очікує",
+  CONFIRMED: "Підтверджено",
+  IN_PROGRESS: "В роботі",
+  DONE: "Завершено",
+  CANCELLED: "Скасовано",
 };
 
 const statusColors: Record<string, string> = {
@@ -26,12 +26,8 @@ export default async function OrdersPage() {
   const orders = await db.order.findMany({
     where: { clientId: session.user.id },
     include: {
-      items: {
-        include: { service: true },
-      },
-      master: {
-        include: { user: { select: { name: true } } },
-      },
+      items: { include: { service: true } },
+      master: { include: { user: { select: { name: true } } } },
       slot: true,
     },
     orderBy: { createdAt: "desc" },
@@ -39,16 +35,16 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Мои заказы</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Мої замовлення</h1>
 
       {orders.length === 0 ? (
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center">
-          <p className="text-zinc-500 mb-4">У вас пока нет заказов</p>
+          <p className="text-zinc-500 mb-4">У вас ще немає замовлень</p>
           <Link
             href="/services"
             className="bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold px-6 py-2.5 rounded-lg transition-colors inline-block"
           >
-            Вызвать мастера
+            Викликати майстра
           </Link>
         </div>
       ) : (
@@ -65,7 +61,7 @@ export default async function OrdersPage() {
                     {order.items[0]?.service.name}
                   </p>
                   <p className="text-zinc-500 text-sm mt-0.5">
-                    Мастер: {order.master.user.name}
+                    Майстер: {order.master.user.name}
                   </p>
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[order.status]}`}>
@@ -75,7 +71,7 @@ export default async function OrdersPage() {
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-zinc-500">
-                  {new Date(order.slot.date).toLocaleDateString("ru-RU", {
+                  {new Date(order.slot.date).toLocaleDateString("uk-UA", {
                     day: "numeric",
                     month: "long",
                   })}

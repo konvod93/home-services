@@ -28,7 +28,7 @@ export default async function ReviewPage({
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-white mb-2">Оставить отзыв</h1>
+      <h1 className="text-2xl font-bold text-white mb-2">Залишити відгук</h1>
       <p className="text-zinc-500 mb-6">
         {order.items[0]?.service.name} — {order.master.user.name}
       </p>

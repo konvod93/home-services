@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 const statusLabels: Record<string, string> = {
   PENDING: "Очікує підтвердження",
   CONFIRMED: "Підтверджено",
-  IN_PROGRESS: "Майстер у дорозі",
+  IN_PROGRESS: "Майстер виконує роботу",
   DONE: "Виконано",
   CANCELLED: "Скасовано",
 };
@@ -59,8 +59,8 @@ export default async function OrderPage({
       master: {
         select: {
           phone: true,
-          user: { select: { name: true, phone: true } }
-        }
+          user: { select: { name: true, phone: true } },
+        },
       },
       slot: true,
       review: true,
@@ -73,7 +73,7 @@ export default async function OrderPage({
 
   const { data, signature } = createPaymentParams({
     id: order.id,
-    totalPrice: order.totalPrice,
+    totalPrice: order.quote?.totalPrice ?? order.totalPrice,
     description: `Оплата замовлення: ${order.items[0]?.service.name}`,
   });
 
@@ -88,7 +88,7 @@ export default async function OrderPage({
 
       <h1 className="text-2xl font-bold text-white mb-6">Замовлення</h1>
 
-      {/* Статус заказа */}
+      {/* Статус */}
       <div className={`border rounded-2xl p-4 mb-4 ${statusColors[order.status]}`}>
         <p className="font-semibold">{statusLabels[order.status]}</p>
       </div>
@@ -119,6 +119,29 @@ export default async function OrderPage({
           </p>
         )}
       </div>
+
+      {/* Смета */}
+      {order.quote && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
+          <h2 className="text-white font-semibold mb-4">Калькуляція від майстра</h2>
+          <div className="space-y-2">
+            {(order.quote.items as Array<{ name: string; quantity: number; unit: string; price: number }>).map((item, i) => (
+              <div key={i} className="flex items-center justify-between text-sm">
+                <span className="text-zinc-400">{item.name}</span>
+                <span className="text-zinc-500 text-xs mx-2">{item.quantity} {item.unit} × {item.price} ₴</span>
+                <span className="text-white">{(item.quantity * item.price).toFixed(2)} ₴</span>
+              </div>
+            ))}
+          </div>
+          {order.quote.comment && (
+            <p className="text-zinc-500 text-xs mt-3 border-t border-zinc-800 pt-3">{order.quote.comment}</p>
+          )}
+          <div className="border-t border-zinc-800 pt-3 mt-3 flex justify-between">
+            <span className="text-zinc-500">Разом</span>
+            <span className="text-amber-400 font-bold text-lg">{order.quote.totalPrice} ₴</span>
+          </div>
+        </div>
+      )}
 
       {/* Информация */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-3 mb-6">
@@ -157,109 +180,75 @@ export default async function OrderPage({
         )}
       </div>
 
-      {/* Смета */}
-      {order.quote && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
-          <h2 className="text-white font-semibold mb-4">Калькуляція від майстра</h2>
-          <div className="space-y-2">
-            {(order.quote.items as Array<{ name: string; quantity: number; unit: string; price: number }>).map((item, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-zinc-400">{item.name}</span>
-                <span className="text-zinc-500 text-xs mx-2">{item.quantity} {item.unit} × {item.price} ₴</span>
-                <span className="text-white">{(item.quantity * item.price).toFixed(2)} ₴</span>
-              </div>
-            ))}
-          </div>
-          {order.quote.comment && (
-            <p className="text-zinc-500 text-xs mt-3 border-t border-zinc-800 pt-3">{order.quote.comment}</p>
+      {/* Контакти майстра після оплати */}
+      {order.paymentStatus === "HELD" && (
+        <div className="bg-zinc-900 border border-amber-400/20 rounded-2xl p-5 mb-6">
+          <h2 className="text-white font-semibold mb-3">Контакти майстра</h2>
+          <p className="text-zinc-400 text-sm mb-1">{order.master.user.name}</p>
+          {order.master.phone ? (<a
+
+            href={`tel:${order.master.phone}`}
+            className="text-amber-400 font-medium hover:text-amber-300 transition-colors"
+          >
+            {order.master.phone}
+          </a>
+          ) : (
+            <p className="text-zinc-500 text-sm">Телефон не вказано</p>
           )}
-          <div className="border-t border-zinc-800 pt-3 mt-3 flex justify-between">
-            <span className="text-zinc-500">Разом</span>
-            <span className="text-amber-400 font-bold text-lg">{order.quote.totalPrice} ₴</span>
-          </div>
+          <p className="text-zinc-600 text-xs mt-3">
+            Якщо майстер не з’явився вчасно —{" "}
+            <a href="mailto:admin@homefix.com" className="text-zinc-400 hover:text-white transition-colors">
+              зв’яжіться з адміністратором
+            </a>
+          </p>
         </div>
       )}
 
-      {/* Кнопка оплаты — только после калькуляции */}
+      {/* Кнопка оплаты */}
       {order.status === "CONFIRMED" && order.paymentStatus === "PENDING" && order.quote && (
         <div className="mb-4">
           <LiqpayButton data={data} signature={signature} />
         </div>
       )}
 
-      {/* Відмова клієнта після оплати */}
+      {!order.quote && order.status === "CONFIRMED" && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-4">
+          <p className="text-zinc-500 text-sm">⏳ Очікуємо калькуляцію від майстра...</p>
+        </div>
+      )}
+
+      {/* Подтверждение выполнения */}
+      {order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
+        <div className="space-y-3 mb-4">
+          <ConfirmOrderButton orderId={order.id} />
+        </div>
+      )}
+
+      {/* Отзыв */}
+      {order.status === "DONE" && order.paymentStatus === "RELEASED" && !order.review && (
+        <Link
+          href={`/orders/${order.id}/review`}
+          className="block w-full text-center bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors mb-4"
+        >
+          Залишити відгук
+        </Link>
+      )}
+
+      {/* Жалоба */}
+      {order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
+        <ComplaintForm orderId={order.id} />
+      )}
+
+      {/* Отмена клиентом */}
       {order.paymentStatus === "HELD" && order.status !== "DONE" && order.status !== "CANCELLED" && !order.complaint && (
         <ClientCancelButton orderId={order.id} />
       )}
 
-      {/* Контакти мастера після оплати */}
-      {order.paymentStatus === "HELD" && (
-        <div className="bg-zinc-900 border border-amber-400/20 rounded-2xl p-5 mb-6">
-          <h2 className="text-white font-semibold mb-3">Контакти майстра</h2>
-          <p className="text-zinc-400 text-sm mb-1">{order.master.user.name}</p>
-          {order.master.phone ? (
-
-            <a href={`tel:${order.master.phone}`}
-              className="text-amber-400 font-medium hover:text-amber-300 transition-colors"
-            >
-              {order.master.phone}
-            </a>
-          ) : (
-            <p className="text-zinc-500 text-sm">Телефон не вказано</p>
-          )}
-          <p className="text-zinc-600 text-xs mt-3">
-            Якщо майстер не з`явився вчасно —{" "}
-            <a href="mailto:admin@homefix.com" className="text-zinc-400 hover:text-white transition-colors">
-              зв`яжіться з адміністратором
-            </a>
-          </p>
-        </div>
-      )
-      }
-
-      {
-        !order.quote && order.status === "CONFIRMED" && (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-4">
-            <p className="text-zinc-500 text-sm">⏳ Очікуємо калькуляцію від майстра...</p>
-          </div>
-        )
-      }
-
-      {/* Подтверждение выполнения */}
-      {
-        order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
-          <div className="space-y-3 mb-4">
-            <ConfirmOrderButton orderId={order.id} />
-          </div>
-        )
-      }
-
-      {/* Отзыв */}
-      {
-        order.status === "DONE" && order.paymentStatus === "RELEASED" && !order.review && (
-          <Link
-            href={`/orders/${order.id}/review`}
-            className="block w-full text-center bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors mb-4"
-          >
-            Залишити відгук
-          </Link>
-        )
-      }
-
-      {/* Жалоба */}
-      {
-        order.status === "DONE" && order.paymentStatus === "HELD" && !order.complaint && (
-          <ComplaintForm orderId={order.id} />
-        )
-      }
-
-      {
-        order.complaint && (
-          <p className="text-zinc-600 text-sm text-center mt-4">
-            Скаргу подано {new Date(order.complaint.createdAt).toLocaleDateString("uk-UA")}
-          </p>
-        )
-      }
-    </div >
+      {order.complaint && (
+        <p className="text-zinc-600 text-sm text-center mt-4">
+          Скаргу подано {new Date(order.complaint.createdAt).toLocaleDateString("uk-UA")}
+        </p>
+      )}
+    </div>
   );
 }
