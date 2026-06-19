@@ -10,8 +10,6 @@ interface Props {
 }
 
 export default function OrderStatusForm({ orderId, currentStatus, paymentStatus, hasQuote }: Props) {
-
-  // PENDING — кнопки "Прийняти" и "Скасувати"
   if (currentStatus === "PENDING") {
     return (
       <div className="flex gap-2">
@@ -31,10 +29,8 @@ export default function OrderStatusForm({ orderId, currentStatus, paymentStatus,
     );
   }
 
-  // CONFIRMED — ждём оплаты
   if (currentStatus === "CONFIRMED") {
     if (paymentStatus === "PENDING") {
-      // Клиент ещё не оплатил
       return (
         <div className="flex gap-2 flex-wrap items-center">
           {!hasQuote ? (
@@ -53,7 +49,6 @@ export default function OrderStatusForm({ orderId, currentStatus, paymentStatus,
     }
 
     if (paymentStatus === "HELD") {
-      // Клиент оплатил — можно начинать
       return (
         <button
           onClick={() => updateOrderStatus(orderId, "IN_PROGRESS")}
@@ -65,7 +60,6 @@ export default function OrderStatusForm({ orderId, currentStatus, paymentStatus,
     }
   }
 
-  // IN_PROGRESS — кнопка завершить
   if (currentStatus === "IN_PROGRESS") {
     return (
       <button

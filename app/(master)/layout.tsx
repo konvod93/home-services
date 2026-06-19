@@ -4,7 +4,6 @@ import Link from "next/link";
 import { signOut } from "@/auth";
 import { db } from "@/lib/db";
 import MasterMobileMenu from "@/components/shared/MasterMobileMenu";
-import BlockedModal from "@/components/shared/BlockedModal";
 
 export default async function MasterLayout({
   children,
@@ -22,6 +21,7 @@ export default async function MasterLayout({
   if (!master) redirect("/dashboard");
 
   if (!master.isActive) {
+    const { default: BlockedModal } = await import("@/components/shared/BlockedModal");
     return <BlockedModal />;
   }
 
@@ -32,29 +32,29 @@ export default async function MasterLayout({
           <Link href="/master">
             <span className="text-xl font-bold text-white">
               home<span className="text-amber-400">fix</span>
-              <span className="text-zinc-500 text-sm font-normal ml-2 hidden sm:inline">кабинет мастера</span>
+              <span className="text-zinc-500 text-sm font-normal ml-2 hidden sm:inline">кабінет майстра</span>
             </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-4">
             <Link href="/master" className="text-sm text-zinc-400 hover:text-white transition-colors">
-              Заказы
+              Замовлення
             </Link>
             <Link href="/master/slots" className="text-sm text-zinc-400 hover:text-white transition-colors">
-              Мои слоты
-            </Link>
-            <Link href="/dashboard" className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors">
-              Режим клиента
+              Мої слоти
             </Link>
             <Link href="/master/settings" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Налаштування
+            </Link>
+            <Link href="/dashboard" className="text-sm bg-zinc-800 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-colors">
+              Режим клієнта
             </Link>
             <form action={async () => {
               "use server";
               await signOut({ redirectTo: "/login" });
             }}>
               <button type="submit" className="text-sm text-zinc-500 hover:text-red-400 transition-colors">
-                Выйти
+                Вийти
               </button>
             </form>
           </div>

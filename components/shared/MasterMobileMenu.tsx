@@ -27,22 +27,22 @@ export default function MasterMobileMenu() {
       {open && (
         <div className="absolute top-14 left-0 right-0 bg-zinc-900 border-b border-zinc-800 z-50 px-4 py-4 space-y-1">
           <Link href="/master" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Заказы
+            Замовлення
           </Link>
           <Link href="/master/slots" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Мои слоты
-          </Link>
-          <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Режим клиента
+            Мої слоти
           </Link>
           <Link href="/master/settings" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
             Налаштування
+          </Link>
+          <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
+            Режим клієнта
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="block w-full text-left text-sm text-zinc-500 hover:text-red-400 px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors"
           >
-            Выйти
+            Вийти
           </button>
         </div>
       )}

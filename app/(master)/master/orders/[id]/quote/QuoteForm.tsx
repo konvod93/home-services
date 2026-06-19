@@ -72,7 +72,6 @@ export default function QuoteForm({
 
   return (
     <div className="space-y-4">
-      {/* Строки сметы */}
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={index} className="bg-zinc-800 rounded-xl p-4 space-y-3">
@@ -141,7 +140,6 @@ export default function QuoteForm({
         ))}
       </div>
 
-      {/* Добавить строку */}
       <button
         type="button"
         onClick={addItem}
@@ -150,10 +148,9 @@ export default function QuoteForm({
         + Додати рядок
       </button>
 
-      {/* Комментарий */}
       <div>
         <label className="block text-sm text-zinc-400 mb-1.5">
-          Коментар <span className="text-zinc-600">(необов`язково)</span>
+          Коментар <span className="text-zinc-600">(необов’язково)</span>
         </label>
         <textarea
           value={comment}
@@ -164,7 +161,6 @@ export default function QuoteForm({
         />
       </div>
 
-      {/* Итог */}
       <div className="bg-zinc-800 rounded-xl p-4 flex items-center justify-between">
         <span className="text-zinc-400">Разом до оплати</span>
         <span className="text-2xl font-bold text-amber-400">{total.toFixed(2)} ₴</span>

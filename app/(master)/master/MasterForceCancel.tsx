@@ -26,7 +26,7 @@ export default function MasterForceCancel({ orderId }: { orderId: string }) {
   }
 
   return (
-    <div className="bg-zinc-800 rounded-xl p-4 mt-2 space-y-3">
+    <div className="bg-zinc-800 rounded-xl p-4 mt-2 space-y-3 w-full">
       <p className="text-zinc-400 text-xs">Кошти будуть заморожені до рішення адміністратора</p>
       <textarea
         value={reason}

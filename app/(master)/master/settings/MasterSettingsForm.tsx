@@ -85,7 +85,7 @@ export default function MasterSettingsForm({ master }: Props) {
 
       <div>
         <label className="block text-sm text-zinc-400 mb-1.5">
-          Район міста <span className="text-zinc-600">(необов`язково)</span>
+          Район міста <span className="text-zinc-600">(необов’язково)</span>
         </label>
         <input
           name="district"

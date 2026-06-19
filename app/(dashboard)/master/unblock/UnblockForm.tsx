@@ -19,7 +19,7 @@ export default function UnblockForm({ masterId }: { masterId: string }) {
     if (files.length > 0) {
       const uploaded = await startUpload(files);
       if (!uploaded) {
-        setError("Ошибка загрузки документов");
+        setError("Помилка завантаження документів");
         setLoading(false);
         return;
       }
@@ -41,21 +41,21 @@ export default function UnblockForm({ masterId }: { masterId: string }) {
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
         <div>
           <label className="block text-sm text-zinc-400 mb-1.5">
-            Объяснение ситуации <span className="text-red-400">*</span>
+            Пояснення ситуації <span className="text-red-400">*</span>
           </label>
           <textarea
             name="reason"
             rows={4}
             required
-            placeholder="Опишите ситуацию и причины возникновения проблемы..."
+            placeholder="Опишіть ситуацію та причини виникнення проблеми..."
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors resize-none"
           />
         </div>
 
         <div>
           <label className="block text-sm text-zinc-400 mb-1.5">
-            Подтверждающие документы
-            <span className="text-zinc-600 font-normal ml-1">(судебное решение, экспертная оценка)</span>
+            Підтверджуючі документи
+            <span className="text-zinc-600 font-normal ml-1">(судове рішення, експертна оцінка)</span>
           </label>
           <input
             type="file"
@@ -65,7 +65,7 @@ export default function UnblockForm({ masterId }: { masterId: string }) {
             className="w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-zinc-700 file:text-zinc-300 file:font-medium hover:file:bg-zinc-600 transition-colors"
           />
           {files.length > 0 && (
-            <p className="text-zinc-500 text-xs mt-1">Выбрано: {files.length}</p>
+            <p className="text-zinc-500 text-xs mt-1">Вибрано: {files.length}</p>
           )}
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function UnblockForm({ masterId }: { masterId: string }) {
         disabled={loading}
         className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold rounded-lg py-2.5 transition-colors disabled:opacity-50"
       >
-        {loading ? "Отправляем..." : "Отправить заявку"}
+        {loading ? "Надсилаємо..." : "Надіслати заявку"}
       </button>
     </form>
   );

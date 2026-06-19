@@ -39,7 +39,7 @@ export default function SlotForm({ masterId }: { masterId: string }) {
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Начало</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">Початок</label>
           <input
             name="timeStart"
             type="time"
@@ -48,7 +48,7 @@ export default function SlotForm({ masterId }: { masterId: string }) {
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Конец</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">Кінець</label>
           <input
             name="timeEnd"
             type="time"
@@ -59,14 +59,14 @@ export default function SlotForm({ masterId }: { masterId: string }) {
       </div>
 
       {error && <p className="text-red-400 text-sm">{error}</p>}
-      {success && <p className="text-green-400 text-sm">Слот добавлен</p>}
+      {success && <p className="text-green-400 text-sm">Слот додано</p>}
 
       <button
         type="submit"
         disabled={loading}
         className="bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50"
       >
-        {loading ? "Добавляем..." : "Добавить слот"}
+        {loading ? "Додаємо..." : "Додати слот"}
       </button>
     </form>
   );

@@ -2,16 +2,16 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import OrderStatusForm from "./OrderStatusForm";
-import Link from "next/link";
 import MasterForceCancel from "./MasterForceCancel";
 import NoPhoneModal from "@/components/shared/NoPhoneModal";
+import Link from "next/link";
 
 const statusLabels: Record<string, string> = {
-  PENDING: "Ожидает",
-  CONFIRMED: "Подтверждён",
-  IN_PROGRESS: "В работе",
-  DONE: "Завершён",
-  CANCELLED: "Отменён",
+  PENDING: "Очікує",
+  CONFIRMED: "Підтверджено",
+  IN_PROGRESS: "В роботі",
+  DONE: "Завершено",
+  CANCELLED: "Скасовано",
 };
 
 const statusColors: Record<string, string> = {
@@ -53,105 +53,111 @@ export default async function MasterPage() {
   const done = orders.filter((o) => ["DONE", "CANCELLED"].includes(o.status));
 
   return (
-    <div className="bg-zinc-950">
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Статистика */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-            <p className="text-zinc-500 text-xs mb-1">Новых</p>
-            <p className="text-2xl font-bold text-yellow-400">{pending.length}</p>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-            <p className="text-zinc-500 text-xs mb-1">Активных</p>
-            <p className="text-2xl font-bold text-amber-400">{active.length}</p>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-            <p className="text-zinc-500 text-xs mb-1">Готово</p>
-            <p className="text-2xl font-bold text-green-400">{done.length}</p>
+    <div>
+      {/* Статистика */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <p className="text-zinc-500 text-xs mb-1">Нових</p>
+          <p className="text-2xl font-bold text-yellow-400">{pending.length}</p>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <p className="text-zinc-500 text-xs mb-1">Активних</p>
+          <p className="text-2xl font-bold text-amber-400">{active.length}</p>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <p className="text-zinc-500 text-xs mb-1">Готово</p>
+          <p className="text-2xl font-bold text-green-400">{done.length}</p>
+        </div>
+      </div>
+
+      {/* Нові замовлення */}
+      {pending.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Нові замовлення</h2>
+          <div className="space-y-4">
+            {pending.map((order) => (
+              <div key={order.id} className="bg-zinc-900 border border-yellow-400/20 rounded-2xl p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <p className="text-white font-medium">{order.items[0]?.service.name}</p>
+                    <p className="text-zinc-500 text-sm mt-0.5">Клієнт: {order.client.name}</p>
+                  </div>
+                  <span className="text-amber-400 font-bold">{order.totalPrice} ₴</span>
+                </div>
+                <div className="text-sm text-zinc-400 mb-4">
+                  <p>📍 {order.address}</p>
+                  <p>🗓 {new Date(order.slot.date).toLocaleDateString("uk-UA", { day: "numeric", month: "long" })} о {new Date(order.slot.timeStart).toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" })}</p>
+                  {order.comment && <p>💬 {order.comment}</p>}
+                </div>
+                <OrderStatusForm
+                  orderId={order.id}
+                  currentStatus={order.status}
+                  paymentStatus={order.paymentStatus}
+                  hasQuote={!!order.quote}
+                />
+              </div>
+            ))}
           </div>
         </div>
+      )}
 
-        {/* Новые заказы */}
-        {pending.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-white mb-4">Новые заказы</h2>
-            <div className="space-y-4">
-              {pending.map((order) => (
-                <div key={order.id} className="bg-zinc-900 border border-yellow-400/20 rounded-2xl p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <p className="text-white font-medium">{order.items[0]?.service.name}</p>
-                      <p className="text-zinc-500 text-sm mt-0.5">Клиент: {order.client.name}</p>
-                    </div>
-                    <span className="text-amber-400 font-bold">{order.totalPrice} ₴</span>
-                  </div>
-                  <div className="text-sm text-zinc-400 mb-4">
-                    <p>📍 {order.address}</p>
-                    <p>🗓 {new Date(order.slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long" })} в {new Date(order.slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</p>
-                    {order.comment && <p>💬 {order.comment}</p>}
-                  </div>
-                  <OrderStatusForm orderId={order.id} currentStatus={order.status} paymentStatus={order.paymentStatus} hasQuote={!!order.quote} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Активные заказы */}
-        {active.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-white mb-4">Активные заказы</h2>
-            <div className="space-y-4">
-              {active.map((order) => (
-                <div key={order.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="text-white font-medium">{order.items[0]?.service.name}</p>
-                      <p className="text-zinc-500 text-sm">{order.client.name}</p>
-                      {order.paymentStatus === "HELD" && order.client.phone && (
-                        <a
-                          href={`tel:${order.client.phone}`}
-                          className="text-amber-400 text-sm hover:text-amber-300 transition-colors"
-                        >
-                          {order.client.phone}
-                        </a>
-                      )}
-                    </div>
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[order.status]}`}>
-                      {statusLabels[order.status]}
-                    </span>
-                  </div>
-                  <p className="text-zinc-400 text-sm mb-4">📍 {order.address}</p>
-
-                  <div className="flex gap-2 flex-wrap">
-                    {order.status === "CONFIRMED" && order.paymentStatus === "PENDING" && (
-                      <Link
-                        href={`/master/orders/${order.id}/quote`}
-                        className="text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium px-4 py-2 rounded-lg transition-colors"
+      {/* Активні замовлення */}
+      {active.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Активні замовлення</h2>
+          <div className="space-y-4">
+            {active.map((order) => (
+              <div key={order.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="text-white font-medium">{order.items[0]?.service.name}</p>
+                    <p className="text-zinc-500 text-sm">{order.client.name}</p>
+                    {order.paymentStatus === "HELD" && order.client.phone && (
+                      <a
+                        href={`tel:${order.client.phone}`}
+                        className="text-amber-400 text-sm hover:text-amber-300 transition-colors"
                       >
-                        {order.quote ? "Переглянути калькуляцію" : "Заповнити калькуляцію"}
-                      </Link>
-                    )}
-                    <OrderStatusForm
-                      orderId={order.id}
-                      currentStatus={order.status}
-                      paymentStatus={order.paymentStatus}
-                      hasQuote={!!order.quote}
-                    />
-                    {order.status === "IN_PROGRESS" && (
-                      <MasterForceCancel orderId={order.id} />
+                        {order.client.phone}
+                      </a>
                     )}
                   </div>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[order.status]}`}>
+                    {statusLabels[order.status]}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+                <p className="text-zinc-400 text-sm mb-4">📍 {order.address}</p>
 
-        {/* История */}
-        {done.length > 0 && (
+                <div className="flex gap-2 flex-wrap">
+                  {order.status === "CONFIRMED" && order.paymentStatus === "PENDING" && (
+                    <Link
+                      href={`/master/orders/${order.id}/quote`}
+                      className="text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium px-4 py-2 rounded-lg transition-colors"
+                    >
+                      {order.quote ? "Переглянути калькуляцію" : "Заповнити калькуляцію"}
+                    </Link>
+                  )}
+                  <OrderStatusForm
+                    orderId={order.id}
+                    currentStatus={order.status}
+                    paymentStatus={order.paymentStatus}
+                    hasQuote={!!order.quote}
+                  />
+                  {order.status === "IN_PROGRESS" && (
+                    <MasterForceCancel orderId={order.id} />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+      }
+
+      {/* Історія */}
+      {
+        done.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4">История</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">Історія</h2>
             <div className="space-y-3">
               {done.map((order) => (
                 <div key={order.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
@@ -169,14 +175,16 @@ export default async function MasterPage() {
               ))}
             </div>
           </div>
-        )}
+        )
+      }
 
-        {orders.length === 0 && (
+      {
+        orders.length === 0 && (
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center">
-            <p className="text-zinc-500">Заказов пока нет</p>
+            <p className="text-zinc-500">Замовлень поки немає</p>
           </div>
-        )}
-      </main>
-    </div>
+        )
+      }
+    </div >
   );
 }
