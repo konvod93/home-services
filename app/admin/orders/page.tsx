@@ -1,6 +1,22 @@
 import { db } from "@/lib/db";
 import DisputeActions from "./DisputeActions";
 
+const statusLabels: Record<string, string> = {
+  PENDING: "Очікує",
+  CONFIRMED: "Підтверджено",
+  IN_PROGRESS: "В роботі",
+  DONE: "Завершено",
+  CANCELLED: "Скасовано",
+};
+
+const statusColors: Record<string, string> = {
+  PENDING: "text-yellow-400 bg-yellow-400/10",
+  CONFIRMED: "text-blue-400 bg-blue-400/10",
+  IN_PROGRESS: "text-amber-400 bg-amber-400/10",
+  DONE: "text-green-400 bg-green-400/10",
+  CANCELLED: "text-red-400 bg-red-400/10",
+};
+
 const paymentStatusLabels: Record<string, string> = {
   PENDING: "Очікує оплати",
   HELD: "Заморожено",
@@ -15,22 +31,6 @@ const paymentStatusColors: Record<string, string> = {
   RELEASED: "text-green-400 bg-green-400/10",
   REFUNDED: "text-amber-400 bg-amber-400/10",
   DISPUTED: "text-red-400 bg-red-400/10",
-};
-
-const statusLabels: Record<string, string> = {
-  PENDING: "Ожидает",
-  CONFIRMED: "Подтверждён",
-  IN_PROGRESS: "В работе",
-  DONE: "Завершён",
-  CANCELLED: "Отменён",
-};
-
-const statusColors: Record<string, string> = {
-  PENDING: "text-yellow-400 bg-yellow-400/10",
-  CONFIRMED: "text-blue-400 bg-blue-400/10",
-  IN_PROGRESS: "text-amber-400 bg-amber-400/10",
-  DONE: "text-green-400 bg-green-400/10",
-  CANCELLED: "text-red-400 bg-red-400/10",
 };
 
 export default async function AdminOrdersPage() {
@@ -56,22 +56,21 @@ export default async function AdminOrdersPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-white">Заказы</h1>
-        <span className="text-zinc-500 text-sm">{stats.total} всего</span>
+        <h1 className="text-2xl font-bold text-white">Замовлення</h1>
+        <span className="text-zinc-500 text-sm">{stats.total} всього</span>
       </div>
 
-      {/* Статистика */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-zinc-500 text-xs mb-1">Всего</p>
+          <p className="text-zinc-500 text-xs mb-1">Всього</p>
           <p className="text-2xl font-bold text-white">{stats.total}</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-zinc-500 text-xs mb-1">Новых</p>
+          <p className="text-zinc-500 text-xs mb-1">Нових</p>
           <p className="text-2xl font-bold text-yellow-400">{stats.pending}</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-zinc-500 text-xs mb-1">Завершённых</p>
+          <p className="text-zinc-500 text-xs mb-1">Завершених</p>
           <p className="text-2xl font-bold text-green-400">{stats.done}</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
@@ -81,14 +80,13 @@ export default async function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* Таблица */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Услуга</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Клиент</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Мастер</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Послуга</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Клієнт</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Майстер</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дата</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Комісія</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Статус</th>
@@ -110,7 +108,7 @@ export default async function AdminOrdersPage() {
                 </td>
                 <td className="px-6 py-4">
                   <p className="text-zinc-400 text-sm">
-                    {new Date(order.slot.date).toLocaleDateString("ru-RU", {
+                    {new Date(order.slot.date).toLocaleDateString("uk-UA", {
                       day: "numeric",
                       month: "short",
                     })}
@@ -137,7 +135,6 @@ export default async function AdminOrdersPage() {
                     <DisputeActions orderId={order.id} />
                   )}
                 </td>
-
               </tr>
             ))}
           </tbody>
@@ -145,7 +142,7 @@ export default async function AdminOrdersPage() {
 
         {orders.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-zinc-500">Заказов пока нет</p>
+            <p className="text-zinc-500">Замовлень поки немає</p>
           </div>
         )}
       </div>

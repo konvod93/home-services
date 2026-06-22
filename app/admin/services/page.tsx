@@ -3,12 +3,12 @@ import ServiceActions from "./ServiceActions";
 import AddServiceButton from "./AddServiceButton";
 
 const categoryLabels: Record<string, string> = {
-  PLUMBING: "Сантехника",
-  ELECTRICAL: "Электрика",
+  PLUMBING: "Сантехніка",
+  ELECTRICAL: "Електрика",
   RENOVATION: "Ремонт",
-  CLEANING: "Уборка",
-  FURNITURE: "Мебель",
-  OTHER: "Другое",
+  CLEANING: "Прибирання",
+  FURNITURE: "Меблі",
+  OTHER: "Інше",
 };
 
 export default async function AdminServicesPage() {
@@ -22,8 +22,8 @@ export default async function AdminServicesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Услуги</h1>
-        <span className="text-zinc-500 text-sm">{services.length} всего</span>
+        <h1 className="text-2xl font-bold text-white">Послуги</h1>
+        <span className="text-zinc-500 text-sm">{services.length} всього</span>
       </div>
 
       <div className="mb-6">
@@ -34,12 +34,12 @@ export default async function AdminServicesPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Услуга</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Категория</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Цена</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Мастеров</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Заказов</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Действия</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Послуга</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Категорія</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Ціна</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Майстрів</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Замовлень</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дії</th>
             </tr>
           </thead>
           <tbody>

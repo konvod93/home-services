@@ -24,10 +24,9 @@ export default async function AdminLayout({
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <span className="text-xl font-bold text-white">
             home<span className="text-amber-400">fix</span>
-            <span className="text-zinc-500 text-sm font-normal ml-2 hidden sm:inline">админ</span>
+            <span className="text-zinc-500 text-sm font-normal ml-2 hidden sm:inline">адмін</span>
           </span>
 
-          {/* Desktop */}
           <div className="hidden md:flex items-center gap-6">
             <Link href="/admin" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
               Заявки
@@ -37,12 +36,12 @@ export default async function AdminLayout({
                 </span>
               )}
             </Link>
-            <Link href="/admin/masters" className="text-sm text-zinc-400 hover:text-white transition-colors">Мастера</Link>
-            <Link href="/admin/users" className="text-sm text-zinc-400 hover:text-white transition-colors">Пользователи</Link>
-            <Link href="/admin/orders" className="text-sm text-zinc-400 hover:text-white transition-colors">Заказы</Link>
-            <Link href="/admin/services" className="text-sm text-zinc-400 hover:text-white transition-colors">Услуги</Link>
+            <Link href="/admin/masters" className="text-sm text-zinc-400 hover:text-white transition-colors">Майстри</Link>
+            <Link href="/admin/users" className="text-sm text-zinc-400 hover:text-white transition-colors">Користувачі</Link>
+            <Link href="/admin/orders" className="text-sm text-zinc-400 hover:text-white transition-colors">Замовлення</Link>
+            <Link href="/admin/services" className="text-sm text-zinc-400 hover:text-white transition-colors">Послуги</Link>
             <Link href="/admin/complaints" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
-              Жалобы
+              Скарги
               {pendingComplaints > 0 && (
                 <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
                   {pendingComplaints}
@@ -50,7 +49,7 @@ export default async function AdminLayout({
               )}
             </Link>
             <Link href="/admin/unblock" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
-              Разблокирование
+              Розблокування
               {pendingUnblock > 0 && (
                 <span className="bg-yellow-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
                   {pendingUnblock}
@@ -60,7 +59,6 @@ export default async function AdminLayout({
             <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-white transition-colors">← На сайт</Link>
           </div>
 
-          {/* Mobile */}
           <AdminMobileMenu
             pendingApplications={pendingApplications}
             pendingComplaints={pendingComplaints}

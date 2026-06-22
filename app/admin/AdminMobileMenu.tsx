@@ -45,19 +45,19 @@ export default function AdminMobileMenu({ pendingApplications, pendingComplaints
             )}
           </Link>
           <Link href="/admin/masters" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Мастера
+            Майстри
           </Link>
           <Link href="/admin/users" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Пользователи
+            Користувачі
           </Link>
           <Link href="/admin/orders" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Заказы
+            Замовлення
           </Link>
           <Link href="/admin/services" onClick={() => setOpen(false)} className="block text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Услуги
+            Послуги
           </Link>
           <Link href="/admin/complaints" onClick={() => setOpen(false)} className="flex items-center justify-between text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Жалобы
+            Скарги
             {pendingComplaints > 0 && (
               <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                 {pendingComplaints}
@@ -65,7 +65,7 @@ export default function AdminMobileMenu({ pendingApplications, pendingComplaints
             )}
           </Link>
           <Link href="/admin/unblock" onClick={() => setOpen(false)} className="flex items-center justify-between text-sm text-zinc-400 hover:text-white px-3 py-2.5 rounded-lg hover:bg-zinc-800 transition-colors">
-            Разблокирование
+            Розблокування
             {pendingUnblock > 0 && (
               <span className="bg-yellow-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                 {pendingUnblock}

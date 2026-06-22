@@ -4,12 +4,12 @@ import { useState } from "react";
 import { createService, updateService } from "@/lib/actions/admin.actions";
 
 const categories = [
-  { value: "PLUMBING", label: "Сантехника" },
-  { value: "ELECTRICAL", label: "Электрика" },
+  { value: "PLUMBING", label: "Сантехніка" },
+  { value: "ELECTRICAL", label: "Електрика" },
   { value: "RENOVATION", label: "Ремонт" },
-  { value: "CLEANING", label: "Уборка" },
-  { value: "FURNITURE", label: "Мебель" },
-  { value: "OTHER", label: "Другое" },
+  { value: "CLEANING", label: "Прибирання" },
+  { value: "FURNITURE", label: "Меблі" },
+  { value: "OTHER", label: "Інше" },
 ];
 
 interface Props {
@@ -45,7 +45,7 @@ export default function ServiceForm({ service, onClose }: Props) {
   return (
     <form action={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Название</label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Назва</label>
         <input
           name="name"
           type="text"
@@ -56,14 +56,14 @@ export default function ServiceForm({ service, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Категория</label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Категорія</label>
         <select
           name="category"
           required
           defaultValue={service?.category}
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-400 transition-colors"
         >
-          <option value="">Выберите категорию</option>
+          <option value="">Оберіть категорію</option>
           {categories.map((c) => (
             <option key={c.value} value={c.value}>{c.label}</option>
           ))}
@@ -72,7 +72,7 @@ export default function ServiceForm({ service, onClose }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Базовая цена (₴)</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">Базова ціна (₴)</label>
           <input
             name="basePrice"
             type="number"
@@ -83,20 +83,20 @@ export default function ServiceForm({ service, onClose }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Единица</label>
+          <label className="block text-sm text-zinc-400 mb-1.5">Одиниця</label>
           <input
             name="unit"
             type="text"
             required
             defaultValue={service?.unit}
-            placeholder="за выезд, за м², за час"
+            placeholder="за виїзд, за м², за годину..."
             className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">Описание <span className="text-zinc-600">(необязательно)</span></label>
+        <label className="block text-sm text-zinc-400 mb-1.5">Опис <span className="text-zinc-600">(необов’язково)</span></label>
         <textarea
           name="description"
           rows={2}
@@ -113,14 +113,14 @@ export default function ServiceForm({ service, onClose }: Props) {
           disabled={loading}
           className="bg-amber-400 hover:bg-amber-300 text-zinc-900 font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50"
         >
-          {loading ? "Сохраняем..." : service ? "Сохранить" : "Добавить"}
+          {loading ? "Зберігаємо..." : service ? "Зберегти" : "Додати"}
         </button>
         <button
           type="button"
           onClick={onClose}
           className="text-zinc-500 hover:text-white px-6 py-2.5 transition-colors"
         >
-          Отмена
+          Скасувати
         </button>
       </div>
     </form>

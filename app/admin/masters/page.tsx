@@ -6,7 +6,6 @@ export default async function AdminMastersPage() {
     include: {
       user: { select: { name: true, email: true } },
       _count: { select: { orders: true, complaints: true } },
-      application: { select: { status: true, categories: true } },
     },
     orderBy: { rating: "desc" },
   });
@@ -14,20 +13,20 @@ export default async function AdminMastersPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-white">Мастера</h1>
-        <span className="text-zinc-500 text-sm">{masters.length} всего</span>
+        <h1 className="text-2xl font-bold text-white">Майстри</h1>
+        <span className="text-zinc-500 text-sm">{masters.length} всього</span>
       </div>
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Мастер</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Майстер</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Рейтинг</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Заказов</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Жалоб</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Замовлень</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Скарг</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Статус</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Действие</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дія</th>
             </tr>
           </thead>
           <tbody>
@@ -45,7 +44,7 @@ export default async function AdminMastersPage() {
                     {master.rating > 0 ? `★ ${master.rating.toFixed(1)}` : "—"}
                   </span>
                   {master.reviewCount > 0 && (
-                    <p className="text-zinc-600 text-xs">{master.reviewCount} отзывов</p>
+                    <p className="text-zinc-600 text-xs">{master.reviewCount} відгуків</p>
                   )}
                 </td>
                 <td className="px-6 py-4">
@@ -59,10 +58,10 @@ export default async function AdminMastersPage() {
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full w-fit ${master.isVerified ? "text-green-400 bg-green-400/10" : "text-zinc-500 bg-zinc-800"}`}>
-                      {master.isVerified ? "Верифицирован" : "Не верифицирован"}
+                      {master.isVerified ? "Верифіковано" : "Не верифіковано"}
                     </span>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full w-fit ${master.isActive ? "text-blue-400 bg-blue-400/10" : "text-red-400 bg-red-400/10"}`}>
-                      {master.isActive ? "Активен" : "Заблокирован"}
+                      {master.isActive ? "Активний" : "Заблокований"}
                     </span>
                   </div>
                 </td>

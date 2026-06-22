@@ -16,12 +16,12 @@ export default async function AdminUnblockPage() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold text-white mb-8">Заявки на разблокирование</h1>
+            <h1 className="text-2xl font-bold text-white mb-8">Заявки на розблокування</h1>
 
             {pending.length > 0 && (
                 <div className="mb-10">
                     <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                        На рассмотрении
+                        На розгляді
                         <span className="text-xs bg-yellow-400/10 text-yellow-400 px-2 py-0.5 rounded-full">
                             {pending.length}
                         </span>
@@ -61,7 +61,7 @@ export default async function AdminUnblockPage() {
 
             {reviewed.length > 0 && (
                 <div>
-                    <h2 className="text-lg font-semibold text-white mb-4">История</h2>
+                    <h2 className="text-lg font-semibold text-white mb-4">Історія</h2>
                     <div className="space-y-3">
                         {reviewed.map((req) => (
                             <div key={req.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
@@ -71,7 +71,7 @@ export default async function AdminUnblockPage() {
                                 </div>
                                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${req.status === "APPROVED" ? "text-green-400 bg-green-400/10" : "text-red-400 bg-red-400/10"
                                     }`}>
-                                    {req.status === "APPROVED" ? "Одобрена" : "Отклонена"}
+                                    {req.status === "APPROVED" ? "Схвалено" : "Відхилено"}
                                 </span>
                             </div>
                         ))}
@@ -81,7 +81,7 @@ export default async function AdminUnblockPage() {
 
             {requests.length === 0 && (
                 <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center">
-                    <p className="text-zinc-500">Заявок пока нет</p>
+                    <p className="text-zinc-500">Заявок доки немає</p>
                 </div>
             )}
         </div>

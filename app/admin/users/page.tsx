@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
 
 const roleLabels: Record<string, string> = {
-  CLIENT: "Клиент",
-  MASTER: "Мастер",
-  ADMIN: "Админ",
+  CLIENT: "Клієнт",
+  MASTER: "Майстер",
+  ADMIN: "Адмін",
 };
 
 const roleColors: Record<string, string> = {
@@ -28,18 +28,18 @@ export default async function AdminUsersPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-white">Пользователи</h1>
-        <span className="text-zinc-500 text-sm">{users.length} всего</span>
+        <h1 className="text-2xl font-bold text-white">Користувачі</h1>
+        <span className="text-zinc-500 text-sm">{users.length} всього</span>
       </div>
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Пользователь</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Користувач</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Роль</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Заказов</th>
-              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Мастер</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Замовлень</th>
+              <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Майстер</th>
               <th className="text-left text-zinc-500 text-xs font-medium px-6 py-4">Дата</th>
             </tr>
           </thead>
@@ -63,7 +63,7 @@ export default async function AdminUsersPage() {
                   {user.master ? (
                     <div>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${user.master.isVerified ? "text-green-400 bg-green-400/10" : "text-yellow-400 bg-yellow-400/10"}`}>
-                        {user.master.isVerified ? "Верифицирован" : "Не верифицирован"}
+                        {user.master.isVerified ? "Веріфікований" : "Не верифікований"}
                       </span>
                       {user.master.rating > 0 && (
                         <p className="text-zinc-500 text-xs mt-1">★ {user.master.rating.toFixed(1)} ({user.master.reviewCount})</p>
