@@ -7,8 +7,8 @@ import { ServiceCategory } from "@prisma/client";
 
 export async function submitMasterApplication(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
-  if (session.user.role !== "CLIENT") return { error: "Нет доступа" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
+  if (session.user.role !== "CLIENT") return { error: "Немає доступу" };
 
   const bio = formData.get("bio") as string;
   const experience = parseInt(formData.get("experience") as string);
@@ -20,11 +20,11 @@ export async function submitMasterApplication(formData: FormData) {
   const city = formData.get("city") as string;
   const district = formData.get("district") as string;
 
-  if (!bio) return { error: "Заполните поле 'О себе'" };
-  if (isNaN(experience)) return { error: "Укажите опыт работы" };
-  if (!idPhoto) return { error: "Загрузите фото с паспортом" };
-  if (categories.length === 0) return { error: "Выберите специализацию" };
-  if (serviceIds.length === 0) return { error: "Выберите хотя бы одну услугу" };
+  if (!bio) return { error: "Заповніть поле 'Про себе'" };
+  if (isNaN(experience)) return { error: "Вкажіть досвід роботи" };
+  if (!idPhoto) return { error: "Завантажте фото з паспортом" };
+  if (categories.length === 0) return { error: "Виберіть спеціалізацію" };
+  if (serviceIds.length === 0) return { error: "Виберіть хоча б одну послугу" };
   if (!city) return { error: "Вкажіть місто" };
 
   const existing = await db.master.findUnique({

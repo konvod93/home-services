@@ -8,8 +8,8 @@ import { sendOrderStatusUpdate } from "@/lib/email";
 
 export async function updateOrderStatus(orderId: string, status: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
-  if (session.user.role !== "MASTER") return { error: "Нет доступа" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
+  if (session.user.role !== "MASTER") return { error: "Немає доступу" };
 
   const order = await db.order.update({
     where: { id: orderId },
@@ -36,8 +36,8 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
 export async function updateMasterSettings(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
-  if (session.user.role !== "MASTER") return { error: "Нет доступа" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
+  if (session.user.role !== "MASTER") return { error: "Немає доступу" };
 
   const masterId = formData.get("masterId") as string;
   const bio = formData.get("bio") as string;

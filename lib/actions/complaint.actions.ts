@@ -7,13 +7,13 @@ import { sendComplaintNotificationToAdmin } from "@/lib/email";
 
 export async function submitComplaint(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
 
   const orderId = formData.get("orderId") as string;
   const reason = formData.get("reason") as string;
   const photos = JSON.parse(formData.get("photos") as string) as string[];
 
-  if (!reason) return { error: "Опишите причину жалобы" };
+  if (!reason) return { error: "Опишіть причину скарги" };
 
   const order = await db.order.findUnique({
     where: { id: orderId },
@@ -25,8 +25,8 @@ export async function submitComplaint(formData: FormData) {
     },
   });
 
-  if (!order || order.clientId !== session.user.id) return { error: "Заказ не найден" };
-  if (order.complaint) return { error: "Жалоба уже подана" };
+  if (!order || order.clientId !== session.user.id) return { error: "Замовлення не знайдено" };
+  if (order.complaint) return { error: "Скарга вже подана" };
 
   await db.complaint.create({
     data: {
@@ -57,7 +57,7 @@ export async function submitComplaint(formData: FormData) {
       adminEmail: admin.email,
       clientName: order.client.name,
       masterName: order.master.user.name,
-      serviceName: order.items[0]?.service.name ?? "Услуга",
+      serviceName: order.items[0]?.service.name ?? "Послуга",
       reason,
     });
   }

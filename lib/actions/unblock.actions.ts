@@ -7,23 +7,21 @@ import { revalidatePath } from "next/cache";
 
 export async function submitUnblockRequest(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
-  if (session.user.role !== "MASTER") return { error: "Нет доступа" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
+  if (session.user.role !== "MASTER") return { error: "Немає доступу" };
 
   const masterId = formData.get("masterId") as string;
   const reason = formData.get("reason") as string;
   const documents = JSON.parse(formData.get("documents") as string) as string[];
 
-  if (!reason) return { error: "Опишите ситуацию" };
+  if (!reason) return { error: "Опишіть ситуацію" };
 
   const existing = await db.unblockRequest.findUnique({
     where: { masterId },
   });
-
-  // if (existing) return { error: "Заявка уже подана" };
-
+  
   if (existing && existing.status === "PENDING") {
-    return { error: "Заявка уже находится на рассмотрении" };
+    return { error: "Заявка уже знаходиться на розгляді" };
   }
 
   await db.unblockRequest.upsert({

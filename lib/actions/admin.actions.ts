@@ -9,13 +9,13 @@ import { sendMasterBlockedNotification, sendMasterUnblockedNotification } from "
 
 export async function approveApplication(applicationId: string, masterId: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   const application = await db.masterApplication.findUnique({
     where: { id: applicationId },
   });
 
-  if (!application) return { error: "Заявка не найдена" };
+  if (!application) return { error: "Заявку не знайдено" };
 
   await db.masterApplication.update({
     where: { id: applicationId },
@@ -27,7 +27,7 @@ export async function approveApplication(applicationId: string, masterId: string
     data: { isVerified: true, isActive: true },
   });
 
-  // Создаём MasterService только для выбранных услуг
+  // Створюємо MasterService тільки для обраних послуг
   const serviceIds = application.serviceIds.length > 0
     ? application.serviceIds
     : (await db.service.findMany({
@@ -44,7 +44,7 @@ export async function approveApplication(applicationId: string, masterId: string
     skipDuplicates: true,
   });
 
-  // Получаем цены из basePrice услуг
+  // Отримуємо ціни з basePrice послуг
   const services = await db.service.findMany({
     where: { id: { in: serviceIds } },
   });
@@ -69,7 +69,7 @@ export async function approveApplication(applicationId: string, masterId: string
 
 export async function rejectApplication(applicationId: string, comment: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.masterApplication.update({
     where: { id: applicationId },
@@ -81,7 +81,7 @@ export async function rejectApplication(applicationId: string, comment: string) 
 
 export async function toggleService(serviceId: string, isActive: boolean) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.service.update({
     where: { id: serviceId },
@@ -93,7 +93,7 @@ export async function toggleService(serviceId: string, isActive: boolean) {
 
 export async function toggleMasterBlock(masterId: string, isActive: boolean) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   if (!isActive) {
     await db.unblockRequest.deleteMany({
@@ -120,7 +120,7 @@ export async function toggleMasterBlock(masterId: string, isActive: boolean) {
 
 export async function resolveComplaint(complaintId: string, status: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.complaint.update({
     where: { id: complaintId },
@@ -132,7 +132,7 @@ export async function resolveComplaint(complaintId: string, status: string) {
 
 export async function createService(formData: FormData) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   const name = formData.get("name") as string;
   const category = formData.get("category") as ServiceCategory;
@@ -140,7 +140,7 @@ export async function createService(formData: FormData) {
   const unit = formData.get("unit") as string;
   const description = formData.get("description") as string;
 
-  if (!name || !category || !unit || isNaN(basePrice)) return { error: "Заполните все поля" };
+  if (!name || !category || !unit || isNaN(basePrice)) return { error: "Заповніть всі поля" };
 
   await db.service.create({
     data: { name, category, basePrice, unit, description: description || null },
@@ -151,7 +151,7 @@ export async function createService(formData: FormData) {
 
 export async function updateService(serviceId: string, formData: FormData) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   const name = formData.get("name") as string;
   const category = formData.get("category") as ServiceCategory;
@@ -159,7 +159,7 @@ export async function updateService(serviceId: string, formData: FormData) {
   const unit = formData.get("unit") as string;
   const description = formData.get("description") as string;
 
-  if (!name || !category || !unit || isNaN(basePrice)) return { error: "Заполните все поля" };
+  if (!name || !category || !unit || isNaN(basePrice)) return { error: "Заповніть всі поля" };
 
   await db.service.update({
     where: { id: serviceId },
@@ -171,7 +171,7 @@ export async function updateService(serviceId: string, formData: FormData) {
 
 export async function deleteService(serviceId: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.service.delete({ where: { id: serviceId } });
 
@@ -180,7 +180,7 @@ export async function deleteService(serviceId: string) {
 
 export async function approveUnblock(requestId: string, masterId: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.unblockRequest.update({
     where: { id: requestId },
@@ -203,7 +203,7 @@ export async function approveUnblock(requestId: string, masterId: string) {
 
 export async function rejectUnblock(requestId: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.unblockRequest.update({
     where: { id: requestId },

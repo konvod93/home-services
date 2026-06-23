@@ -8,7 +8,7 @@ import { sendComplaintNotificationToAdmin } from "@/lib/email";
 
 export async function confirmOrderPayment(orderId: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
 
   const order = await db.order.findUnique({
     where: { id: orderId },
@@ -32,7 +32,7 @@ export async function confirmOrderPayment(orderId: string) {
 
 export async function disputeOrderPayment(orderId: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
 
   const order = await db.order.findUnique({ where: { id: orderId } });
 
@@ -50,7 +50,7 @@ export async function disputeOrderPayment(orderId: string) {
 
 export async function resolvePaymentDispute(orderId: string, refund: boolean) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") return { error: "Нет доступа" };
+  if (session?.user?.role !== "ADMIN") return { error: "Немає доступу" };
 
   await db.order.update({
     where: { id: orderId },
@@ -64,12 +64,12 @@ export async function resolvePaymentDispute(orderId: string, refund: boolean) {
 
 export async function cancelOrderByClient(orderId: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
 
   const order = await db.order.findUnique({ where: { id: orderId } });
 
   if (!order || order.clientId !== session.user.id) return { error: "Замовлення не знайдено" };
-  if (order.paymentStatus !== "HELD") return { error: "Некоректний статус" };
+  if (order.paymentStatus !== "HELD") return { error: "Некоректний статус" };  
   if (order.status === "IN_PROGRESS") return { error: "Не можна скасувати — майстер вже виконує роботу" };
 
   await db.order.update({
@@ -86,8 +86,8 @@ export async function cancelOrderByClient(orderId: string) {
 
 export async function cancelOrderByMaster(orderId: string, reason: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
-  if (session.user.role !== "MASTER") return { error: "Нет доступа" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
+  if (session.user.role !== "MASTER") return { error: "Немає доступу" };
 
   const master = await db.master.findUnique({
     where: { userId: session.user.id },

@@ -7,7 +7,7 @@ import { sendOrderConfirmation, sendNewOrderNotificationToMaster } from "@/lib/e
 
 export async function createOrder(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
 
   const serviceId = formData.get("serviceId") as string;
   const masterId = formData.get("masterId") as string;

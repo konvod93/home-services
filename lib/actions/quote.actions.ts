@@ -25,8 +25,8 @@ export async function saveQuote({
   totalPrice: number;
 }) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Необходима авторизация" };
-  if (session.user.role !== "MASTER") return { error: "Нет доступа" };
+  if (!session?.user?.id) return { error: "Необхідна авторизація" };
+  if (session.user.role !== "MASTER") return { error: "Немає доступу" };
 
   await db.quote.upsert({
   where: { orderId },
@@ -34,7 +34,7 @@ export async function saveQuote({
   update: { items: items as unknown as Prisma.InputJsonValue, totalPrice, comment: comment || null },
 })
 
-  // Обновляем totalPrice в заказе
+  // Оновлюємо totalPrice в замовленні
   await db.order.update({
     where: { id: orderId },
     data: { totalPrice },
