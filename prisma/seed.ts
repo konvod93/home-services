@@ -8,24 +8,33 @@ const db = new PrismaClient({ adapter });
 async function main() {
   await db.service.createMany({
     data: [
-      { name: "Замена смесителя", category: "PLUMBING", basePrice: 800, unit: "за выезд" },
-      { name: "Устранение засора", category: "PLUMBING", basePrice: 600, unit: "за выезд" },
-      { name: "Установка унитаза", category: "PLUMBING", basePrice: 1500, unit: "за выезд" },
-      { name: "Замена труб", category: "PLUMBING", basePrice: 500, unit: "за метр" },
-      { name: "Замена розетки / выключателя", category: "ELECTRICAL", basePrice: 400, unit: "за штуку" },
-      { name: "Установка люстры", category: "ELECTRICAL", basePrice: 700, unit: "за выезд" },
-      { name: "Прокладка кабеля", category: "ELECTRICAL", basePrice: 300, unit: "за метр" },
-      { name: "Замена электрощитка", category: "ELECTRICAL", basePrice: 3000, unit: "за выезд" },
-      { name: "Поклейка обоев", category: "RENOVATION", basePrice: 200, unit: "за м²" },
-      { name: "Укладка плитки", category: "RENOVATION", basePrice: 800, unit: "за м²" },
-      { name: "Шпаклёвка стен", category: "RENOVATION", basePrice: 150, unit: "за м²" },
-      { name: "Установка дверей", category: "RENOVATION", basePrice: 2500, unit: "за дверь" },
-      { name: "Генеральная уборка", category: "CLEANING", basePrice: 3000, unit: "за выезд" },
-      { name: "Уборка после ремонта", category: "CLEANING", basePrice: 5000, unit: "за выезд" },
-      { name: "Мытьё окон", category: "CLEANING", basePrice: 200, unit: "за окно" },
-      { name: "Сборка кухни", category: "FURNITURE", basePrice: 5000, unit: "за выезд" },
-      { name: "Сборка шкафа", category: "FURNITURE", basePrice: 1500, unit: "за выезд" },
-      { name: "Сборка кровати", category: "FURNITURE", basePrice: 1000, unit: "за выезд" },
+      // Сантехніка
+      { name: "Заміна змішувача", category: "PLUMBING", basePrice: 800, unit: "за виїзд" },
+      { name: "Усунення засмічення", category: "PLUMBING", basePrice: 600, unit: "за виїзд" },
+      { name: "Встановлення унітазу", category: "PLUMBING", basePrice: 1500, unit: "за виїзд" },
+      { name: "Заміна труб", category: "PLUMBING", basePrice: 500, unit: "за метр" },
+
+      // Електрика
+      { name: "Заміна розетки / вимикача", category: "ELECTRICAL", basePrice: 400, unit: "за штуку" },
+      { name: "Встановлення люстри", category: "ELECTRICAL", basePrice: 700, unit: "за виїзд" },
+      { name: "Прокладання кабелю", category: "ELECTRICAL", basePrice: 300, unit: "за метр" },
+      { name: "Заміна електрощитка", category: "ELECTRICAL", basePrice: 3000, unit: "за виїзд" },
+
+      // Ремонт
+      { name: "Поклейка шпалер", category: "RENOVATION", basePrice: 200, unit: "за м²" },
+      { name: "Укладання плитки", category: "RENOVATION", basePrice: 800, unit: "за м²" },
+      { name: "Шпаклювання стін", category: "RENOVATION", basePrice: 150, unit: "за м²" },
+      { name: "Встановлення дверей", category: "RENOVATION", basePrice: 2500, unit: "за двері" },
+
+      // Прибирання
+      { name: "Генеральне прибирання", category: "CLEANING", basePrice: 3000, unit: "за виїзд" },
+      { name: "Прибирання після ремонту", category: "CLEANING", basePrice: 5000, unit: "за виїзд" },
+      { name: "Миття вікон", category: "CLEANING", basePrice: 200, unit: "за вікно" },
+
+      // Меблі
+      { name: "Збірка кухні", category: "FURNITURE", basePrice: 5000, unit: "за виїзд" },
+      { name: "Збірка шафи", category: "FURNITURE", basePrice: 1500, unit: "за виїзд" },
+      { name: "Збірка ліжка", category: "FURNITURE", basePrice: 1000, unit: "за виїзд" },
     ],
     skipDuplicates: true,
   });
@@ -34,7 +43,7 @@ async function main() {
 
   const masterUser = await db.user.create({
     data: {
-      name: "Александр Петров",
+      name: "Олександр Петров",
       email: "master@homefix.com",
       password: await bcrypt.hash("master123", 12),
       role: "MASTER",
@@ -44,7 +53,7 @@ async function main() {
   const master = await db.master.create({
     data: {
       userId: masterUser.id,
-      bio: "Опыт 10 лет. Качественно и в срок.",
+      bio: "Досвід 10 років. Якісно і в термін.",
       rating: 4.8,
       reviewCount: 24,
     },
