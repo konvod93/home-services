@@ -1,36 +1,156 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏠 HomeFix — Маркетплейс домашніх майстрів
 
-## Getting Started
+Повноцінний fullstack маркетплейс для замовлення послуг сантехніків, електриків, майстрів з ремонту та прибирання. Побудований на Next.js 16 App Router з TypeScript.
 
-First, run the development server:
+🔗 **Live demo:** https://konvod-home-services.vercel.app
+
+---
+
+## 📋 Функціональність
+
+### Для клієнтів
+- Реєстрація з верифікацією через Cloudflare Turnstile (капча)
+- Каталог послуг з фільтрацією за містом
+- Розумне сортування майстрів за локацією (район → місто → область)
+- Перегляд профілю майстра з відгуками та фото
+- Оформлення замовлення з вибором часового слоту
+- Оплата через LiqPay з механізмом ескроу (кошти заморожуються до підтвердження)
+- Підтвердження виконання та розморозка коштів
+- Скарги на майстра з фото-доказами
+- Скасування замовлення з автоматичним поверненням коштів
+- Email-сповіщення про статус замовлення
+
+### Для майстрів
+- Подача заявки з верифікацією особи (фото з паспортом) та кваліфікаційними документами
+- Вибір конкретних послуг (не просто категорій) при реєстрації
+- Управління часовими слотами
+- Кабінет з новими та активними замовленнями
+- Калькулятор кошторису з динамічними рядками (послуга + кількість + одиниця + ціна)
+- Форс-мажор: можливість скасувати замовлення після оплати з поясненням
+- Налаштування профілю та локації
+- Заявка на розблокування з документами
+
+### Для адміністратора
+- Верифікація заявок майстрів з переглядом документів
+- Управління послугами (CRUD)
+- Перегляд всіх замовлень зі статистикою комісії платформи (10%)
+- Розгляд скарг з арбітражем платежів (повернути клієнту / оплатити майстру)
+- Блокування/розблокування майстрів
+- Значки нових заявок у навбарі (badge counters)
+
+---
+
+## 🛠 Технічний стек
+
+| Категорія | Технологія |
+|-----------|-----------|
+| Framework | Next.js 16 (App Router, Server Actions) |
+| Мова | TypeScript |
+| Стилізація | Tailwind CSS v4 |
+| База даних | PostgreSQL (Neon serverless) |
+| ORM | Prisma 7 |
+| Автентифікація | NextAuth v5 (JWT, ролі: CLIENT / MASTER / ADMIN) |
+| Платежі | LiqPay Sandbox (ескроу-модель) |
+| Файли | Uploadthing (документи, фото) |
+| Email | Resend |
+| Капча | Cloudflare Turnstile |
+| Деплой | Vercel |
+
+---
+
+## 🏗 Архітектура
+
+### Структура роутів (App Router)
+
+app/
+
+├── (auth)/          — логін, реєстрація,
+├── (dashboard)/     — клієнтська частина (замовлення, послуги, профіль)
+├── (master)/        — кабінет майстра
+├── admin/           — адмінпанель
+└── api/             — API endpoints (auth, uploadthing, liqpay webhook)
+
+### Бізнес-логіка платежів (ескроу)
+
+Замовлення → Підтвердження майстра → Калькуляція →
+Оплата клієнтом (HELD) → Початок роботи → Завершення →
+Підтвердження клієнтом → Розморозка (RELEASED)
+Скарга → DISPUTED → Арбітраж адміна → RELEASED або REFUNDED
+Форс-мажор → DISPUTED → Арбітраж → REFUNDED (через 30 днів якщо без відповіді)
+
+### Схема БД (основні сутності)
+- `User` — клієнти та адміни (з локацією: область, район, місто, район міста)
+- `Master` — профіль майстра (верифікація, рейтинг, локація)
+- `Service` — каталог послуг з категоріями
+- `MasterService` — зв'язок майстер↔послуга з власною ціною
+- `Slot` — часові слоти майстра
+- `Order` — замовлення зі статусом і статусом оплати
+- `Quote` — кошторис від майстра (JSON: найменування, кількість, одиниця, ціна)
+- `Review` — відгуки з рейтингом і фото
+- `Complaint` — скарги з фото-доказами
+- `MasterApplication` — заявки на верифікацію
+- `UnblockRequest` — заявки на розблокування
+
+---
+
+## 🚀 Локальний запуск
 
 ```bash
+# Клонування
+git clone https://github.com/konvod93/home-services.git
+cd home-services
+
+# Залежності
+npm install
+
+# Змінні середовища — створіть .env файл:
+DATABASE_URL=""           # Neon PostgreSQL
+AUTH_SECRET=""            # nextauth secret
+UPLOADTHING_TOKEN=""      # Uploadthing
+UPLOADTHING_SECRET=""
+RESEND_API_KEY=""         # Resend
+LIQPAY_PUBLIC_KEY=""      # LiqPay Sandbox
+LIQPAY_PRIVATE_KEY=""
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=""  # Cloudflare Turnstile
+TURNSTILE_SECRET_KEY=""
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Міграція БД
+npx prisma migrate dev
+
+# Seed тестових даних
+npm run seed
+
+# Запуск
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Тестові акаунти (після seed)
+| Роль | Email | Пароль |
+|------|-------|--------|
+| Майстер | master@homefix.com | master123 |
+| Адмін | створіть через реєстрацію, змініть роль в Prisma Studio | — |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💡 Ключові технічні рішення
 
-## Learn More
+**Server Actions замість REST API** — мутації даних через Server Actions Next.js, що спрощує код і покращує DX.
 
-To learn more about Next.js, take a look at the following resources:
+**Ескроу-платежі** — кошти заморожуються на рахунку клієнта після оплати і розморожуються лише після підтвердження виконання. Захищає обидві сторони.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Розумна геолокація** — майстри сортуються за збігом район → місто → область. Клієнти з Немишлянського району бачать спочатку майстрів зі свого району.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Верифікація майстрів** — дворівнева перевірка: фото з паспортом + кваліфікаційні документи. Адмін переглядає і схвалює/відхиляє.
 
-## Deploy on Vercel
+**Калькулятор кошторису** — майстер після огляду заповнює детальний кошторис (найменування, кількість, одиниця виміру, ціна за одиницю). Клієнт бачить розбивку і підтверджує оплату вже реальної суми.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📱 Адаптивність
+
+Повністю адаптивний дизайн з hamburger-меню для мобільних пристроїв у всіх трьох навбарах (клієнт, майстер, адмін).
+
+---
+
+*Проєкт створено як демонстраційне портфоліо. Всі платежі — тестовий режим LiqPay Sandbox.*
