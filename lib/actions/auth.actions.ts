@@ -24,6 +24,7 @@ export async function register(formData: FormData) {
   const password = formData.get("password") as string;
   const turnstileToken = formData.get("turnstileToken") as string;
   const region = formData.get("region") as string;
+  const subregion = formData.get("subregion") as string;
   const city = formData.get("city") as string;
   const district = formData.get("district") as string;
 
@@ -49,6 +50,7 @@ export async function register(formData: FormData) {
       email,
       password: hashed,
       region: region || null,
+      subregion: subregion || null,
       city: city || null,
       district: district || null,
     },

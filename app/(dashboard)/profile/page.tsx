@@ -9,7 +9,7 @@ export default async function ProfilePage() {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, phone: true, role: true, createdAt: true, region: true, city: true, district: true },
+    select: { name: true, email: true, phone: true, role: true, createdAt: true, region: true, subregion: true, city: true, district: true },
   });
 
   if (!user) redirect("/login");
@@ -46,6 +46,7 @@ export default async function ProfilePage() {
           name={user.name}
           phone={user.phone ?? ""}
           region={user.region ?? ""}
+          subregion={user.subregion ?? ""}
           city={user.city ?? ""}
           district={user.district ?? ""}
         />

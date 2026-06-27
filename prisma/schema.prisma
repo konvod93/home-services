@@ -41,6 +41,7 @@ model User {
   password  String
   role      Role     @default(CLIENT)
   region    String?
+  subregion String?
   city      String?
   district  String?
   createdAt DateTime @default(now())
@@ -60,6 +61,7 @@ model Master {
   isActive    Boolean  @default(true)
   isVerified  Boolean  @default(false)
   region      String?
+  subregion   String?
   city        String?
   district    String?
   createdAt   DateTime @default(now())

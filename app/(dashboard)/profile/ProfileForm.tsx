@@ -7,15 +7,16 @@ interface ProfileFormProps {
   name: string;
   phone: string;
   region: string;
+  subregion: string;
   city: string;
   district: string;
 }
 
-export default function ProfileForm({ name, phone, region, city, district }: ProfileFormProps) {
+export default function ProfileForm({ name, phone, region, subregion, city, district }: ProfileFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     setError(null);
@@ -60,6 +61,17 @@ export default function ProfileForm({ name, phone, region, city, district }: Pro
           type="text"
           defaultValue={region}
           placeholder="Харківська"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm text-zinc-400 mb-1.5">Район області <span className="text-zinc-600">(необов’язково)</span></label>
+        <input
+          name="subregion"
+          type="text"
+          defaultValue={subregion}
+          placeholder="Чугуївський район"
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
         />
       </div>

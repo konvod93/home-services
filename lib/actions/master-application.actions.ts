@@ -17,6 +17,7 @@ export async function submitMasterApplication(formData: FormData) {
   const categories = JSON.parse(formData.get("categories") as string) as ServiceCategory[];
   const serviceIds = JSON.parse(formData.get("serviceIds") as string) as string[];
   const region = formData.get("region") as string;
+  const subregion = formData.get("subregion") as string;
   const city = formData.get("city") as string;
   const district = formData.get("district") as string;
 
@@ -39,6 +40,7 @@ export async function submitMasterApplication(formData: FormData) {
         userId: session.user.id,
         bio,
         region: region || null,
+        subregion: subregion || null,
         city,
         district: district || null,
       },
@@ -48,6 +50,7 @@ export async function submitMasterApplication(formData: FormData) {
       where: { id: master.id },
       data: {
         region: region || null,
+        subregion: subregion || null,
         city,
         district: district || null,
       },

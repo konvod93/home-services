@@ -145,6 +145,16 @@ export default function BecomeMasterForm({ services }: Props) {
         </div>
 
         <div>
+          <label className="block text-sm text-zinc-400 mb-1.5">Район області <span className="text-zinc-600">(необов’язково)</span></label>
+          <input
+            name="subregion"
+            type="text"
+            placeholder="Чугуївський район"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+          />
+        </div>
+
+        <div>
           <label className="block text-sm text-zinc-400 mb-1.5">Місто / Населений пункт</label>
           <input
             name="city"
@@ -180,11 +190,10 @@ export default function BecomeMasterForm({ services }: Props) {
               key={cat.value}
               type="button"
               onClick={() => toggleCategory(cat.value)}
-              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${
-                selectedCategories.includes(cat.value)
+              className={`text-sm px-4 py-2.5 rounded-lg border transition-colors text-left ${selectedCategories.includes(cat.value)
                   ? "bg-amber-400/10 border-amber-400 text-amber-400"
                   : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
-              }`}
+                }`}
             >
               {cat.label}
             </button>
@@ -205,11 +214,10 @@ export default function BecomeMasterForm({ services }: Props) {
                 key={service.id}
                 type="button"
                 onClick={() => toggleService(service.id)}
-                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${
-                  selectedServices.includes(service.id)
+                className={`w-full text-sm px-4 py-2.5 rounded-lg border transition-colors text-left flex items-center justify-between ${selectedServices.includes(service.id)
                     ? "bg-amber-400/10 border-amber-400 text-white"
                     : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500"
-                }`}
+                  }`}
               >
                 <span>{service.name}</span>
                 <span className="text-zinc-600 text-xs">{service.unit}</span>

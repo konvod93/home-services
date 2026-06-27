@@ -11,6 +11,7 @@ export async function updateProfile(formData: FormData) {
   const name = formData.get("name") as string;
   const phone = formData.get("phone") as string;
   const region = formData.get("region") as string;
+  const subregion = formData.get("subregion") as string;
   const city = formData.get("city") as string;
   const district = formData.get("district") as string;
 
@@ -22,6 +23,7 @@ export async function updateProfile(formData: FormData) {
       name,
       phone: phone || null,
       region: region || null,
+      subregion: subregion || null,
       city: city || null,
       district: district || null,
     },

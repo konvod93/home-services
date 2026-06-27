@@ -10,6 +10,7 @@ interface Props {
     city: string | null;
     district: string | null;
     region: string | null;
+    subregion: string | null;
     phone: string | null;
   };
 }
@@ -68,6 +69,17 @@ export default function MasterSettingsForm({ master }: Props) {
           type="text"
           defaultValue={master.region ?? ""}
           placeholder="Харківська"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm text-zinc-400 mb-1.5">Район області <span className="text-zinc-600">(необов’язково)</span></label>
+        <input
+          name="subregion"
+          type="text"
+          defaultValue={master.subregion ?? ""}
+          placeholder="Чугуївський район"
           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
         />
       </div>

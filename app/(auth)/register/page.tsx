@@ -83,6 +83,16 @@ export default function RegisterPage() {
             </div>
 
             <div>
+              <label className="block text-sm text-zinc-400 mb-1.5">Район області <span className="text-zinc-600">(необов’язково)</span></label>
+              <input
+                name="subregion"
+                type="text"
+                placeholder="Чугуївський район"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+            </div>
+
+            <div>
               <label className="block text-sm text-zinc-400 mb-1.5">Місто / Населений пункт</label>
               <input
                 name="city"
