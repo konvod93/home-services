@@ -24,6 +24,9 @@ export default async function MasterProfilePage({
     include: {
       user: { select: { name: true } },
       services: { include: { service: true } },
+      // ⚠️ REVIEW: No pagination — loads ALL completed orders with reviews for this master.
+      // Will degrade significantly as order history grows.
+      // FIX: add `take: 10` and implement cursor-based or offset pagination
       orders: {
         where: { status: "DONE" },
         include: {

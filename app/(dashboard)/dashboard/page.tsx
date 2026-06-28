@@ -49,6 +49,8 @@ export default async function DashboardPage() {
         )}
       </div>
 
+      {/* ⚠️ REVIEW: All stats are hardcoded to `0` — no DB queries are made. */}
+      {/* FIX: fetch order counts grouped by status for the current user and render real numbers */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <p className="text-zinc-500 text-sm mb-1">Усього замовлень</p>
