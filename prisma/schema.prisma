@@ -33,6 +33,12 @@ enum ServiceCategory {
 
 // ─── MODELS ──────────────────────────────────────────────
 
+// ⚠️ REVIEW: No indexes defined on any model in the entire schema.
+// PostgreSQL does NOT auto-index foreign keys — every filtered query does a sequential scan.
+// Affects: Order (clientId, masterId, status), Slot (masterId, date, isBusy),
+//          Master (city, isActive, isVerified), Complaint (status, masterId).
+// FIX: add @@index([clientId]), @@index([masterId]), @@index([status]) etc. to hot models
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique

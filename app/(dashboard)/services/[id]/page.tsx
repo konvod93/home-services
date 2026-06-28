@@ -3,6 +3,9 @@ import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
+// ⚠️ REVIEW: `categoryLabels` (and statusLabels, statusColors) are copy-pasted across 10+ files.
+// Adding a new category requires updating every file manually — easy to miss one.
+// FIX: move shared label maps to `lib/constants.ts` and import from there
 const categoryLabels: Record<string, string> = {
   PLUMBING: "Сантехніка",
   ELECTRICAL: "Електрика",
@@ -23,6 +26,10 @@ function getLocationScore(
   if (user.region && master.region?.toLowerCase() === user.region.toLowerCase()) score += 1;
   return score;
 }
+
+// ⚠️ REVIEW: No loading.tsx or Suspense anywhere in the app.
+// Every page fully blocks on all DB queries before rendering anything to the user.
+// FIX: add loading.tsx next to heavy pages, or wrap slow sections in <Suspense fallback={<Skeleton/>}>
 
 export default async function ServicePage({
   params,
@@ -84,6 +91,9 @@ export default async function ServicePage({
 
   const showAllMasters = sortedMasters.length === 0 && filterCity;
 
+  // ⚠️ REVIEW: If the city filter returns no results, a second full DB query runs as a fallback.
+  // Both queries load all masters with nested slots — double the latency for a common "no results" case.
+  // FIX: fetch all masters in one query without city filter, then filter/sort by city in memory
   const allMasters = showAllMasters ? await db.masterService.findMany({
     where: {
       serviceId: id,

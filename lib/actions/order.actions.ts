@@ -18,6 +18,9 @@ export async function createOrder(formData: FormData) {
 
   if (!address) return { error: "Вкажіть адресу" };
 
+  // ⚠️ REVIEW: Race condition — slot availability check and slot booking are two separate operations.
+  // Two concurrent requests can both pass the `isBusy` check and create duplicate orders for the same slot.
+  // FIX: wrap slot check + order create + slot update in a single `db.$transaction()`
   const slot = await db.slot.findUnique({ where: { id: slotId } });
   if (!slot || slot.isBusy) return { error: "Слот вже зайнятий" };
 
@@ -46,7 +49,10 @@ export async function createOrder(formData: FormData) {
     data: { isBusy: true },
   });
 
-  // Отправляем email
+  // ⚠️ REVIEW: Two emails are sent sequentially with `await` before the redirect —
+  // user waits on a frozen button until both Resend calls complete (~300-600ms extra).
+  // FIX: use Promise.all([sendOrderConfirmation(...), sendNewOrderNotificationToMaster(...)])
+  // to send in parallel, or fire-and-forget (remove await) to unblock redirect immediately.
   if (client?.email && service && master) {
     await sendOrderConfirmation({
       clientEmail: client.email,
@@ -60,6 +66,8 @@ export async function createOrder(formData: FormData) {
   }
 
   if (master) {
+    // ⚠️ REVIEW: Master's email is fetched in a separate DB query after master is already loaded above.
+    // FIX: add `email: true` to the master's user select on line ~29 and remove this extra query
     const masterUser = await db.user.findUnique({
       where: { id: master.userId },
       select: { email: true },

@@ -10,6 +10,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }) {
+      // ⚠️ REVIEW: Role is written to JWT only once at login (jwt callback fires with `user` only on sign-in).
+      // If an admin changes a user's role in the DB, the JWT keeps the old role until the user logs out and back in.
+      // FIX: re-fetch user role from DB on every JWT refresh, or use DB sessions instead of JWT
       if (user) {
         token.id = user.id;
         token.role = user.role;

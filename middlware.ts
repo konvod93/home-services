@@ -1,3 +1,8 @@
+// ⚠️ REVIEW: File is named `middlware.ts` — missing letter `e`.
+// Next.js only loads middleware from a file named exactly `middleware.ts`.
+// This file is NEVER executed — all route protection logic here is dead code.
+// FIX: rename this file to `middleware.ts`
+
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
