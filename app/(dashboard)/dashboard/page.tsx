@@ -1,9 +1,20 @@
 import { auth } from "@/auth";
 import Link from "next/link";
 import MasterApplicationButton from "./MasterApplicationButton";
+import { db} from "@/lib/db";
 
 export default async function DashboardPage() {
   const session = await auth();
+  const orders = await db.order.findMany({
+    where: { clientId: session?.user?.id },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const stats = {
+    total: orders.length,
+    active: orders.filter((o) => o.status !== "DONE" && o.status !== "CANCELLED").length,
+    completed: orders.filter((o) => o.status === "DONE").length,
+  };
 
   return (
     <div>
@@ -52,15 +63,15 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <p className="text-zinc-500 text-sm mb-1">Усього замовлень</p>
-          <p className="text-3xl font-bold text-white">0</p>
+          <p className="text-3xl font-bold text-white">{stats.total}</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <p className="text-zinc-500 text-sm mb-1">Активних</p>
-          <p className="text-3xl font-bold text-amber-400">0</p>
+          <p className="text-3xl font-bold text-amber-400">{stats.active}</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <p className="text-zinc-500 text-sm mb-1">Завершених</p>
-          <p className="text-3xl font-bold text-green-400">0</p>
+          <p className="text-3xl font-bold text-green-400">{stats.completed}</p>
         </div>
       </div>
     </div>
