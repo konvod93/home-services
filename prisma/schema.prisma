@@ -50,6 +50,9 @@ model User {
   orders     Order[]     @relation("ClientOrders")
   master     Master?
   complaints Complaint[] @relation("ClientComplaints")
+
+  @@index([email, role])
+  @@index([region, subregion, city, district])
 }
 
 model Master {
@@ -75,6 +78,10 @@ model Master {
   application    MasterApplication?
   complaints     Complaint[]
   unblockRequest UnblockRequest?
+
+  @@index([region, subregion, city, district])
+  @@index([isActive, isVerified])
+  @@index([rating])
 }
 
 model Service {
@@ -113,6 +120,8 @@ model Slot {
 
   master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
   order  Order?
+
+  @@index([masterId, isBusy, date])
 }
 
 enum PaymentStatus {
@@ -146,6 +155,12 @@ model Order {
   review     Review?
   complaint  Complaint?
   quote      Quote?
+
+  @@index([clientId])
+  @@index([masterId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -168,6 +183,9 @@ model Review {
   createdAt DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  
 }
 
 enum ApplicationStatus {
@@ -191,6 +209,8 @@ model MasterApplication {
   updatedAt  DateTime          @updatedAt
 
   master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+
+  @@index([status])
 }
 
 enum ComplaintStatus {
@@ -213,6 +233,10 @@ model Complaint {
   order  Order  @relation(fields: [orderId], references: [id])
   client User   @relation("ClientComplaints", fields: [clientId], references: [id])
   master Master @relation(fields: [masterId], references: [id])
+
+  @@index([status])
+  @@index([clientId])
+  @@index([masterId])
 }
 
 model UnblockRequest {
