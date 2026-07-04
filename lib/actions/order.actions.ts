@@ -18,13 +18,26 @@ export async function createOrder(formData: FormData) {
 
   if (!address) return { error: "Вкажіть адресу" };
 
-  const slot = await db.slot.findUnique({ where: { id: slotId } });
-  if (!slot || slot.isBusy) return { error: "Слот вже зайнятий" };
+  // Атомарне оновлення слоту — race condition виключено
+  const slot = await db.slot.updateMany({
+    where: { id: slotId, isBusy: false },
+    data: { isBusy: true },
+  });
 
-  const [service, master, client] = await Promise.all([
+  if (slot.count === 0) return { error: "Слот вже зайнятий" };
+
+  // Всі дані паралельно
+  const [service, master, client, slotData] = await Promise.all([
     db.service.findUnique({ where: { id: serviceId } }),
-    db.master.findUnique({ where: { id: masterId }, include: { user: { select: { name: true } } } }),
-    db.user.findUnique({ where: { id: session.user.id }, select: { name: true, email: true } }),
+    db.master.findUnique({
+      where: { id: masterId },
+      include: { user: { select: { name: true, email: true } } }, // email одразу
+    }),
+    db.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true, email: true },
+    }),
+    db.slot.findUnique({ where: { id: slotId } }),
   ]);
 
   const order = await db.order.create({
@@ -41,44 +54,37 @@ export async function createOrder(formData: FormData) {
     },
   });
 
-  await db.slot.update({
-    where: { id: slotId },
-    data: { isBusy: true },
-  });
-
-  // Отправляем email
-  if (client?.email && service && master) {
-    await sendOrderConfirmation({
-      clientEmail: client.email,
-      clientName: client.name,
-      serviceName: service.name,
-      masterName: master.user.name,
-      date: new Date(slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
-      time: new Date(slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-      address,
+  // Email — паралельно і не блокуємо redirect
+  if (client?.email && service && master && slotData) {
+    const dateStr = new Date(slotData.date).toLocaleDateString("uk-UA", {
+      day: "numeric", month: "long", year: "numeric",
     });
-  }
-
-  if (master) {
-    const masterUser = await db.user.findUnique({
-      where: { id: master.userId },
-      select: { email: true },
+    const timeStr = new Date(slotData.timeStart).toLocaleTimeString("uk-UA", {
+      hour: "2-digit", minute: "2-digit",
     });
 
-    if (masterUser?.email && service && client) {
-      await sendNewOrderNotificationToMaster({
-        masterEmail: masterUser.email,
+    Promise.all([
+      sendOrderConfirmation({
+        clientEmail: client.email,
+        clientName: client.name,
+        serviceName: service.name,
+        masterName: master.user.name,
+        date: dateStr,
+        time: timeStr,
+        address,
+      }),
+      sendNewOrderNotificationToMaster({
+        masterEmail: master.user.email,
         masterName: master.user.name,
         clientName: client.name,
         serviceName: service.name,
-        date: new Date(slot.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }),
-        time: new Date(slot.timeStart).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+        date: dateStr,
+        time: timeStr,
         address,
         comment: comment || null,
-      });
-    }
+      }),
+    ]).catch(console.error); // не блокуємо, але логуємо помилки
   }
 
   redirect(`/orders/${order.id}`);
 }
-
