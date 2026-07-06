@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "dotenv -e .env -- tsx --tsconfig tsconfig.seed.json prisma/seed.ts"
+    "seed": "dotenv -e .env -- tsx --tsconfig tsconfig.seed.json prisma/seed.ts",
+    "fix-master-services": "dotenv -e .env -- tsx --tsconfig tsconfig.seed.json prisma/seed.ts fix"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.2",

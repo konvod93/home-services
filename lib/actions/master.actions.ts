@@ -46,6 +46,9 @@ export async function updateMasterSettings(formData: FormData) {
   const subregion = formData.get("subregion") as string;
   const city = formData.get("city") as string;
   const district = formData.get("district") as string;
+  const serviceIds = JSON.parse(formData.get("serviceIds") as string) as string[];
+
+  if (!phone) return { error: "Телефон обов'язковий" };
 
   await db.master.update({
     where: { id: masterId },
@@ -58,6 +61,24 @@ export async function updateMasterSettings(formData: FormData) {
       district: district || null,
     },
   });
+
+  // Оновлюємо послуги — видаляємо старі і додаємо нові
+  await db.masterService.deleteMany({ where: { masterId } });
+
+  if (serviceIds.length > 0) {
+    const services = await db.service.findMany({
+      where: { id: { in: serviceIds }, isActive: true },
+    });
+
+    await db.masterService.createMany({
+      data: services.map((s) => ({
+        masterId,
+        serviceId: s.id,
+        price: Number(s.basePrice),
+      })),
+      skipDuplicates: true,
+    });
+  }
 
   revalidatePath("/master/settings");
   return { success: true };

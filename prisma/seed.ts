@@ -95,6 +95,68 @@ async function main() {
   console.log("✅ Master and slots seeded");
 }
 
-main()
-  .catch(console.error)
-  .finally(() => db.$disconnect());
+async function fixMasterServices() {
+  const masters = await db.master.findMany({
+    where: { isActive: true, isVerified: true },
+    include: {
+      application: { select: { categories: true, serviceIds: true } },
+      services: { select: { serviceId: true } },
+    },
+  });
+
+  for (const master of masters) {
+    const existingServiceIds = master.services.map((s) => s.serviceId);
+
+    let serviceIds: string[] = [];
+
+    if (master.application?.serviceIds?.length  && master.application.serviceIds.length > 0) {
+      // Якщо є конкретні послуги в заявці
+      serviceIds = master.application.serviceIds.filter(
+        (id) => !existingServiceIds.includes(id)
+      );
+    } else if (master.application?.categories?.length && master.application.categories.length > 0) {
+      // Якщо є тільки категорії
+      const services = await db.service.findMany({
+        where: {
+          category: { in: master.application.categories },
+          isActive: true,
+        },
+        select: { id: true },
+      });
+      serviceIds = services
+        .map((s) => s.id)
+        .filter((id) => !existingServiceIds.includes(id));
+    }
+
+    if (serviceIds.length > 0) {
+      const services = await db.service.findMany({
+        where: { id: { in: serviceIds } },
+      });
+
+      await db.masterService.createMany({
+        data: services.map((s) => ({
+          masterId: master.id,
+          serviceId: s.id,
+          price: Number(s.basePrice),
+        })),
+        skipDuplicates: true,
+      });
+
+      console.log(`✅ Fixed ${services.length} services for master ${master.id}`);
+    }
+  }
+
+  console.log("✅ MasterService fix complete");
+}
+
+const command = process.argv[2];
+
+if (command === "fix") {
+  fixMasterServices()
+    .catch(console.error)
+    .finally(() => db.$disconnect());
+} else {
+  main()
+    .catch(console.error)
+    .finally(() => db.$disconnect());
+}
