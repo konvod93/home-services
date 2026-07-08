@@ -32,6 +32,7 @@ export default async function MasterProfilePage({
           items: { include: { service: true } },
         },
         orderBy: { createdAt: "desc" },
+        take: 20, // останні 20 завершених замовлень
       },
     },
   });
