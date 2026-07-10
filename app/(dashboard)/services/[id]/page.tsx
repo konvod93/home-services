@@ -175,20 +175,20 @@ export default async function ServicePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ city?: string }>;
+  searchParams: Promise<{ city?: string; all?: string }>;
 }) {
   const { id } = await params;
-  const { city: cityFilter } = await searchParams;
+  const { city: cityFilter, all } = await searchParams;
   const session = await auth();
 
-  const userCity = session?.user?.id
+  const userCity = !all && session?.user?.id
     ? (await db.user.findUnique({
         where: { id: session.user.id },
         select: { city: true },
       }))?.city ?? ""
     : "";
 
-  const filterCity = cityFilter || userCity;
+  const filterCity = all ? "" : (cityFilter || userCity);
 
   const service = await db.service.findUnique({
     where: { id },
