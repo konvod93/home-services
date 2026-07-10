@@ -13,32 +13,62 @@ const categoryLabels: Record<string, string> = {
   OTHER: "Інше",
 };
 
+type LocationFilter = {
+  region?: string;
+  subregion?: string;
+  city?: string;
+  district?: string;
+};
+
+function normalizeLocationValue(value?: string | null): string {
+  return value?.trim() ?? "";
+}
+
 function getLocationScore(
-  master: { city?: string | null; district?: string | null; region?: string | null },
-  user: { city?: string | null; district?: string | null; region?: string | null } | null
+  master: { city?: string | null; district?: string | null; region?: string | null; subregion?: string | null },
+  user: { city?: string | null; district?: string | null; region?: string | null; subregion?: string | null } | null
 ): number {
   if (!user) return 0;
+
   let score = 0;
-  if (user.district && master.district?.toLowerCase() === user.district.toLowerCase()) score += 3;
-  if (user.city && master.city?.toLowerCase() === user.city.toLowerCase()) score += 2;
-  if (user.region && master.region?.toLowerCase() === user.region.toLowerCase()) score += 1;
+  if (user.district && master.district?.toLowerCase() === user.district.toLowerCase()) score += 5;
+  if (user.city && master.city?.toLowerCase() === user.city.toLowerCase()) score += 4;
+  if (user.subregion && master.subregion?.toLowerCase() === user.subregion.toLowerCase()) score += 3;
+  if (user.region && master.region?.toLowerCase() === user.region.toLowerCase()) score += 2;
   return score;
+}
+
+function matchesLocation(
+  master: { city?: string | null; district?: string | null; region?: string | null; subregion?: string | null },
+  filter: LocationFilter
+): boolean {
+  const district = normalizeLocationValue(filter.district);
+  const city = normalizeLocationValue(filter.city);
+  const subregion = normalizeLocationValue(filter.subregion);
+  const region = normalizeLocationValue(filter.region);
+
+  if (district && normalizeLocationValue(master.district) !== district) return false;
+  if (city && normalizeLocationValue(master.city) !== city) return false;
+  if (subregion && normalizeLocationValue(master.subregion) !== subregion) return false;
+  if (region && normalizeLocationValue(master.region) !== region) return false;
+
+  return true;
 }
 
 async function MastersList({
   serviceId,
-  filterCity,
+  locationFilter,
   userId,
 }: {
   serviceId: string;
-  filterCity: string;
+  locationFilter: LocationFilter;
   userId: string | null;
 }) {
   const [user, service] = await Promise.all([
     userId
       ? db.user.findUnique({
           where: { id: userId },
-          select: { city: true, district: true, region: true },
+          select: { city: true, district: true, region: true, subregion: true },
         })
       : Promise.resolve(null),
     db.service.findUnique({
@@ -49,9 +79,6 @@ async function MastersList({
             master: {
               isActive: true,
               isVerified: true,
-              ...(filterCity
-                ? { city: { contains: filterCity, mode: "insensitive" } }
-                : {}),
             },
           },
           include: {
@@ -73,8 +100,10 @@ async function MastersList({
 
   if (!service) notFound();
 
+  const filteredMasters = service.masters.filter(({ master }) => matchesLocation(master, locationFilter));
+
   // Сортуємо за локацією — без дублюючого fallback запиту
-  const sortedMasters = [...service.masters].sort((a, b) => {
+  const sortedMasters = [...filteredMasters].sort((a, b) => {
     const scoreA = getLocationScore(a.master, user);
     const scoreB = getLocationScore(b.master, user);
     if (scoreB !== scoreA) return scoreB - scoreA;
@@ -82,14 +111,18 @@ async function MastersList({
   });
 
   if (sortedMasters.length === 0) {
+    const locationLabel = [locationFilter.district, locationFilter.city, locationFilter.subregion, locationFilter.region]
+      .filter(Boolean)
+      .join(", ");
+
     return (
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
         <p className="text-zinc-500 mb-3">
-          {filterCity
-            ? `Майстрів у місті "${filterCity}" не знайдено`
+          {locationLabel
+            ? `Майстрів у "${locationLabel}" не знайдено`
             : "Поки немає доступних майстрів для цієї послуги"}
         </p>
-        {filterCity && (
+        {locationLabel && (
           <Link href={`/services/${serviceId}?all=true`} className="text-amber-400 hover:text-amber-300 text-sm transition-colors">
             Показати всіх майстрів →
           </Link>
@@ -175,20 +208,31 @@ export default async function ServicePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ city?: string; all?: string }>;
+  searchParams: Promise<{ city?: string; region?: string; subregion?: string; district?: string; all?: string }>;
 }) {
   const { id } = await params;
-  const { city: cityFilter, all } = await searchParams;
+  const { city: cityFilter, region: regionFilter, subregion: subregionFilter, district: districtFilter, all } = await searchParams;
   const session = await auth();
 
-  const userCity = !all && session?.user?.id
+  const userLocation = !all && session?.user?.id
     ? (await db.user.findUnique({
         where: { id: session.user.id },
-        select: { city: true },
-      }))?.city ?? ""
-    : "";
+        select: { region: true, subregion: true, city: true, district: true },
+      }))
+    : null;
 
-  const filterCity = all ? "" : (cityFilter || userCity);
+  const locationFilter: LocationFilter = all
+    ? {}
+    : {
+        region: normalizeLocationValue(regionFilter || userLocation?.region),
+        subregion: normalizeLocationValue(subregionFilter || userLocation?.subregion),
+        city: normalizeLocationValue(cityFilter || userLocation?.city),
+        district: normalizeLocationValue(districtFilter || userLocation?.district),
+      };
+
+  const locationLabel = [locationFilter.district, locationFilter.city, locationFilter.subregion, locationFilter.region]
+    .filter(Boolean)
+    .join(", ");
 
   const service = await db.service.findUnique({
     where: { id },
@@ -197,10 +241,16 @@ export default async function ServicePage({
 
   if (!service) notFound();
 
+  const backParams = new URLSearchParams();
+  if (locationFilter.region) backParams.set("region", locationFilter.region);
+  if (locationFilter.subregion) backParams.set("subregion", locationFilter.subregion);
+  if (locationFilter.city) backParams.set("city", locationFilter.city);
+  if (locationFilter.district) backParams.set("district", locationFilter.district);
+
   return (
     <div className="max-w-3xl">
       <Link
-        href={`/services${filterCity ? `?city=${filterCity}` : ""}`}
+        href={`/services${backParams.toString() ? `?${backParams.toString()}` : ""}`}
         className="text-zinc-500 hover:text-white text-sm transition-colors mb-6 inline-flex items-center gap-1"
       >
         ← Всі послуги
@@ -221,8 +271,8 @@ export default async function ServicePage({
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-white">Доступні майстри</h2>
-        {filterCity && (
-          <span className="text-zinc-500 text-sm">у місті {filterCity}</span>
+        {locationLabel && (
+          <span className="text-zinc-500 text-sm">у {locationLabel}</span>
         )}
       </div>
 
@@ -233,7 +283,7 @@ export default async function ServicePage({
       }>
         <MastersList
           serviceId={id}
-          filterCity={filterCity}
+          locationFilter={locationFilter}
           userId={session?.user?.id ?? null}
         />
       </Suspense>
