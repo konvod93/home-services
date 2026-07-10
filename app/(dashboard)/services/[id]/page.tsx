@@ -90,7 +90,7 @@ async function MastersList({
             : "Поки немає доступних майстрів для цієї послуги"}
         </p>
         {filterCity && (
-          <Link href={`/services/${serviceId}`} className="text-amber-400 hover:text-amber-300 text-sm transition-colors">
+          <Link href={`/services/${serviceId}?all=true`} className="text-amber-400 hover:text-amber-300 text-sm transition-colors">
             Показати всіх майстрів →
           </Link>
         )}

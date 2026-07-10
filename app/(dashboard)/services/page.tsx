@@ -23,19 +23,19 @@ const categoryEmoji: Record<string, string> = {
 export default async function ServicesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ city?: string }>;
+  searchParams: Promise<{ city?: string; all?: string }>;
 }) {
   const session = await auth();
-  const { city } = await searchParams;
-
-  const user = session?.user?.id
-    ? await db.user.findUnique({
+  const { city: cityFilter, all } = await searchParams;
+  
+  const userCity = !all && session?.user?.id
+  ? (await db.user.findUnique({
       where: { id: session.user.id },
-      select: { city: true, district: true, region: true },
-    })
-    : null;
+      select: { city: true },
+    }))?.city ?? ""
+  : "";
 
-  const filterCity = city || user?.city || "";
+  const filterCity = all ? "" : (cityFilter || userCity);
 
   const services = await db.service.findMany({
     where: { isActive: true },
