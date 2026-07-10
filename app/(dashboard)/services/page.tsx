@@ -26,16 +26,17 @@ export default async function ServicesPage({
   searchParams: Promise<{ city?: string; all?: string }>;
 }) {
   const session = await auth();
-  const { city: cityFilter, all } = await searchParams;
-  
-  const userCity = !all && session?.user?.id
-  ? (await db.user.findUnique({
-      where: { id: session.user.id },
-      select: { city: true },
-    }))?.city ?? ""
-  : "";
+  const { city, all } = await searchParams;
+  const normalizedCityFilter = city?.trim() ?? "";
 
-  const filterCity = all ? "" : (cityFilter || userCity);
+  const userCity = !all && !normalizedCityFilter && session?.user?.id
+    ? (await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { city: true },
+      }))?.city ?? ""
+    : "";
+
+  const filterCity = all ? "" : (normalizedCityFilter || userCity);
 
   const services = await db.service.findMany({
     where: { isActive: true },
