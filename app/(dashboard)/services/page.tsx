@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { auth } from "@/auth";
 import Link from "next/link";
 
 const categoryLabels: Record<string, string> = {
@@ -20,34 +19,17 @@ const categoryEmoji: Record<string, string> = {
   OTHER: "🔧",
 };
 
-export default async function ServicesPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ city?: string; all?: string }>;
-}) {
-  const session = await auth();
-  const { city, all } = await searchParams;
-  const normalizedCityFilter = city?.trim() ?? "";
-
-  const userCity = !all && !normalizedCityFilter && session?.user?.id
-    ? (await db.user.findUnique({
-        where: { id: session.user.id },
-        select: { city: true },
-      }))?.city ?? ""
-    : "";
-
-  const filterCity = all ? "" : (normalizedCityFilter || userCity);
-
+export default async function ServicesPage() {
   const services = await db.service.findMany({
     where: { isActive: true },
     orderBy: { category: "asc" },
     include: {
-      masters: {
-        where: {
-          master: {
-            isActive: true,
-            isVerified: true,
-            ...(filterCity ? { city: { contains: filterCity, mode: "insensitive" } } : {}),
+      _count: {
+        select: {
+          masters: {
+            where: {
+              master: { isActive: true, isVerified: true },
+            },
           },
         },
       },
@@ -65,42 +47,12 @@ export default async function ServicesPage({
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Послуги</h1>
-          <p className="text-zinc-500 mt-1">Оберіть потрібну послугу та викличте майстра</p>
-        </div>
-
-        <form className="flex gap-2">
-          <input
-            name="city"
-            type="text"
-            defaultValue={filterCity}
-            placeholder="Фільтр за містом..."
-            className="bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
-          />
-          <button
-            type="submit"
-            className="bg-amber-400 hover:bg-amber-300 text-zinc-900 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            Знайти
-          </button>
-          {filterCity && (
-
-            <Link href="/services"
-              className="bg-zinc-800 hover:bg-zinc-700 text-zinc-400 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-            >
-              ✕
-            </Link>
-          )}
-        </form>
-      </div>
-
-      {filterCity && (
-        <p className="text-zinc-500 text-sm mb-6">
-          Показано майстрів у місті: <span className="text-white">{filterCity}</span>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">Послуги</h1>
+        <p className="text-zinc-500 mt-1">
+          Оберіть потрібну послугу — майстри підберуться за вашим містом автоматично
         </p>
-      )}
+      </div>
 
       <div className="space-y-10">
         {Object.entries(grouped).map(([category, items]) => (
@@ -122,16 +74,16 @@ export default async function ServicesPage({
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-amber-400 font-semibold">
-                        середня ціна {service.basePrice} ₴
+                        від {service.basePrice} ₴
                       </span>
-                      {service.masters.length > 0 && (
+                      {service._count.masters > 0 && (
                         <p className="text-zinc-600 text-xs mt-0.5">
-                          {service.masters.length} майстр{service.masters.length === 1 ? "" : "ів"}
+                          {service._count.masters} майстр{service._count.masters === 1 ? "" : "ів"}
                         </p>
                       )}
                     </div>
                     <Link
-                      href={`/services/${service.id}${filterCity ? `?city=${filterCity}` : ""}`}
+                      href={`/services/${service.id}`}
                       className="text-sm bg-amber-400 hover:bg-amber-300 text-zinc-900 font-medium px-4 py-1.5 rounded-lg transition-colors"
                     >
                       Замовити
