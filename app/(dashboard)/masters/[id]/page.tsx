@@ -12,38 +12,56 @@ const categoryLabels: Record<string, string> = {
   OTHER: "Інше",
 };
 
+const REVIEWS_PER_PAGE = 5;
+
 export default async function MasterProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { id } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1"));
+  const skip = (currentPage - 1) * REVIEWS_PER_PAGE;
 
   const master = await db.master.findUnique({
     where: { id },
     include: {
       user: { select: { name: true } },
       services: { include: { service: true } },
-      orders: {
-        where: { status: "DONE" },
-        include: {
-          review: true,
-          client: { select: { name: true } },
-          items: { include: { service: true } },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 20, // останні 20 завершених замовлень
-      },
     },
   });
 
   if (!master || !master.isActive || !master.isVerified) notFound();
 
-  const reviews = master.orders
-    .filter((o) => o.review)
-    .map((o) => ({ ...o.review!, clientName: o.client.name, serviceName: o.items[0]?.service.name }));
+  // Окремий запит для відгуків з пагінацією
+  const [reviewOrders, totalReviews] = await Promise.all([
+    db.order.findMany({
+      where: { masterId: id, status: "DONE", review: { isNot: null } },
+      include: {
+        review: true,
+        client: { select: { name: true } },
+        items: { include: { service: { select: { name: true } } } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: REVIEWS_PER_PAGE,
+    }),
+    db.order.count({
+      where: { masterId: id, status: "DONE", review: { isNot: null } },
+    }),
+  ]);
 
+  const totalPages = Math.ceil(totalReviews / REVIEWS_PER_PAGE);
   const categories = [...new Set(master.services.map((s) => s.service.category))];
+
+  const reviews = reviewOrders.map((o) => ({
+    ...o.review!,
+    clientName: o.client.name,
+    serviceName: o.items[0]?.service.name,
+  }));
 
   return (
     <div className="max-w-2xl">
@@ -64,20 +82,15 @@ export default async function MasterProfilePage({
             <h1 className="text-xl font-bold text-white">{master.user.name}</h1>
             <div className="flex items-center gap-3 mt-1">
               {master.rating > 0 ? (
-                <span className="text-amber-400 font-medium">
-                  ★ {master.rating.toFixed(1)}
-                </span>
+                <span className="text-amber-400 font-medium">★ {master.rating.toFixed(1)}</span>
               ) : (
                 <span className="text-zinc-500 text-sm">Новий майстер</span>
               )}
               {master.reviewCount > 0 && (
                 <span className="text-zinc-500 text-sm">{master.reviewCount} відгуків</span>
               )}
-              <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded-full">
-                ✓ Верифіковано
-              </span>
+              <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded-full">✓ Верифіковано</span>
             </div>
-
             <div className="flex flex-wrap gap-1 mt-2">
               {categories.map((cat) => (
                 <span key={cat} className="text-xs text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-full">
@@ -87,11 +100,8 @@ export default async function MasterProfilePage({
             </div>
           </div>
         </div>
-
         {master.bio && (
-          <p className="text-zinc-400 text-sm mt-4 border-t border-zinc-800 pt-4">
-            {master.bio}
-          </p>
+          <p className="text-zinc-400 text-sm mt-4 border-t border-zinc-800 pt-4">{master.bio}</p>
         )}
         {master.city && (
           <p className="text-zinc-600 text-xs mt-2">
@@ -107,7 +117,9 @@ export default async function MasterProfilePage({
           {master.services.map(({ service, price }) => (
             <div key={service.id} className="flex items-center justify-between text-sm">
               <span className="text-zinc-400">{service.name}</span>
-              <span className="text-amber-400 font-medium">{price} ₴ <span className="text-zinc-600">{service.unit}</span></span>
+              <span className="text-amber-400 font-medium">
+                {price} ₴ <span className="text-zinc-600">{service.unit}</span>
+              </span>
             </div>
           ))}
         </div>
@@ -117,8 +129,8 @@ export default async function MasterProfilePage({
       <div>
         <h2 className="text-white font-semibold mb-4">
           Відгуки
-          {reviews.length > 0 && (
-            <span className="text-zinc-500 font-normal text-sm ml-2">{reviews.length} шт.</span>
+          {totalReviews > 0 && (
+            <span className="text-zinc-500 font-normal text-sm ml-2">{totalReviews} шт.</span>
           )}
         </h2>
 
@@ -127,56 +139,73 @@ export default async function MasterProfilePage({
             <p className="text-zinc-500">Відгуків поки немає</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {reviews.map((review) => (
-              <div key={review.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="text-white text-sm font-medium">{review.clientName}</p>
-                    <p className="text-zinc-600 text-xs">{review.serviceName}</p>
+          <>
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <div key={review.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="text-white text-sm font-medium">{review.clientName}</p>
+                      <p className="text-zinc-600 text-xs">{review.serviceName}</p>
+                    </div>
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star} className={star <= review.rating ? "text-amber-400" : "text-zinc-700"}>
+                          ★
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span
-                        key={star}
-                        className={star <= review.rating ? "text-amber-400" : "text-zinc-700"}
-                      >
-                        ★
-                      </span>
-                    ))}
-                  </div>
+                  {review.comment && <p className="text-zinc-400 text-sm">{review.comment}</p>}
+                  {review.photos.length > 0 && (
+                    <div className="flex gap-2 mt-3 flex-wrap">
+                      {review.photos.map((url, i) => (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                          <Image
+                            src={url}
+                            alt={`Фото ${i + 1}`}
+                            width={80}
+                            height={80}
+                            className="rounded-lg object-cover border border-zinc-700 hover:border-amber-400 transition-colors"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-zinc-600 text-xs mt-2">
+                    {new Date(review.createdAt).toLocaleDateString("uk-UA", {
+                      day: "numeric", month: "long", year: "numeric",
+                    })}
+                  </p>
                 </div>
+              ))}
+            </div>
 
-                {review.comment && (
-                  <p className="text-zinc-400 text-sm">{review.comment}</p>
+            {/* Пагінація */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-6">
+                {currentPage > 1 && (
+                  <Link
+                    href={`/masters/${id}?page=${currentPage - 1}`}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm transition-colors"
+                  >
+                    ← Назад
+                  </Link>
                 )}
-
-                {review.photos.length > 0 && (
-                  <div className="flex gap-2 mt-3 flex-wrap">
-                    {review.photos.map((url, i) => (
-                      <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                        <Image
-                          src={url}
-                          alt={`Фото ${i + 1}`}
-                          width={80}
-                          height={80}
-                          className="rounded-lg object-cover border border-zinc-700 hover:border-amber-400 transition-colors"
-                        />
-                      </a>
-                    ))}
-                  </div>
+                <span className="text-zinc-500 text-sm">
+                  {currentPage} / {totalPages}
+                </span>
+                {currentPage < totalPages && (
+                  <Link
+                    href={`/masters/${id}?page=${currentPage + 1}`}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm transition-colors"
+                  >
+                    Далі →
+                  </Link>
                 )}
-
-                <p className="text-zinc-600 text-xs mt-2">
-                  {new Date(review.createdAt).toLocaleDateString("uk-UA", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
