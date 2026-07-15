@@ -1,11 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function DemoModal() {
-  const [open, setOpen] = useState(
-    () => typeof window !== "undefined" && !sessionStorage.getItem("demo-modal-seen")
-  );
+  
+  // const [open, setOpen] = useState(
+  //   () => typeof window !== "undefined" && !sessionStorage.getItem("demo-modal-seen")
+  // );
+
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const seen = sessionStorage.getItem("demo-modal-seen");
+    if (!seen) {
+      const timer = window.setTimeout(() => {
+        setOpen(true);
+      }, 0);
+
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
 
   function handleClose() {
     sessionStorage.setItem("demo-modal-seen", "true");
