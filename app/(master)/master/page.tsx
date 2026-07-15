@@ -5,6 +5,7 @@ import OrderStatusForm from "./OrderStatusForm";
 import MasterForceCancel from "./MasterForceCancel";
 import NoPhoneModal from "@/components/shared/NoPhoneModal";
 import Link from "next/link";
+import AutoRefresh from "@/components/shared/AutoRefresh";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Очікує",
@@ -54,6 +55,7 @@ export default async function MasterPage() {
 
   return (
     <div>
+      <AutoRefresh intervalMs={20000} />
       {/* Статистика */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">

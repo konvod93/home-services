@@ -7,6 +7,7 @@ import LiqpayButton from "@/components/shared/LiqpayButton";
 import { createPaymentParams } from "@/lib/liqpay";
 import ConfirmOrderButton from "./ConfirmOrderButton";
 import ClientCancelButton from "./ClientCancelButton";
+import AutoRefresh from "@/components/shared/AutoRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -77,8 +78,11 @@ export default async function OrderPage({
     description: `Оплата замовлення: ${order.items[0]?.service.name}`,
   });
 
-  return (
+  const isActive = !["DONE", "CANCELLED"].includes(order.status);
+
+  return (    
     <div className="max-w-xl">
+      {isActive && <AutoRefresh intervalMs={15000} />}
       <Link
         href="/orders"
         className="text-zinc-500 hover:text-white text-sm transition-colors mb-6 inline-flex items-center gap-1"
