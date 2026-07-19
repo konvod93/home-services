@@ -15,6 +15,9 @@ export default function OrderForm({ serviceId, masterId, slotId, price }: OrderF
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(formData: FormData) {
+
+    if (loading) return;
+
     setLoading(true);
     setError(null);
     formData.append("serviceId", serviceId);
