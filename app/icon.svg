@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Будинок -->
+  <rect width="32" height="32" rx="8" fill="#0a0a0a"/>
+  <!-- Дах -->
+  <path d="M16 6L4 16h4v10h16V16h4L16 6z" fill="#fbbf24"/>
+  <!-- Двері -->
+  <rect x="13" y="18" width="6" height="8" rx="1" fill="#0a0a0a"/>
+  <!-- Вікно -->
+  <rect x="9" y="15" width="4" height="4" rx="0.5" fill="#0a0a0a"/>
+  <rect x="19" y="15" width="4" height="4" rx="0.5" fill="#0a0a0a"/>
+</svg>
